@@ -1,10 +1,17 @@
 /**
  * TechWriterReview - Roles Tabs Fix (Robust Version)
- * v3.0.64 - Fixed export: initGraphControls now in main export block
+ * v3.0.66 - Diagnostic version with enhanced logging
+ * 
+ * CHANGELOG v3.0.66:
+ * - Added: Enhanced diagnostic logging to all render functions
+ * - Added: Try-catch wrappers to identify render errors
+ * - Added: Container existence checks with clear error messages
+ * 
+ * CHANGELOG v3.0.65:
+ * - Fixed: Labels dropdown now sets GraphState.labelMode before calling update
  * 
  * CHANGELOG v3.0.64:
- * - Fixed: initGraphControls added to main export block (was in duplicate block that overwrote it)
- * - Removed: Duplicate window.TWR.RolesTabs assignment that was losing functions
+ * - Fixed: initGraphControls now in main export block (was being overwritten)
  * 
  * CHANGELOG v3.0.63:
  * - Fixed: Graph controls now use _tabsFixInitialized flag (same as RACI, Details, Adjudication)
@@ -37,7 +44,7 @@
 (function() {
     'use strict';
     
-    console.log('[TWR RolesTabs] Loading v3.0.64...');
+    console.log('[TWR RolesTabs] Loading v3.0.66 (diagnostic)...');
     
     // Cache for API data
     const Cache = {
@@ -208,17 +215,24 @@
      * Render Overview tab
      */
     async function renderOverview() {
-        console.log('[TWR RolesTabs] Rendering Overview...');
+        console.log('[TWR RolesTabs] === renderOverview START ===');
         
-        let roles = await fetchAggregatedRoles();
-        const history = await fetchScanHistory();
-        let dataSource = 'scans';
+        try {
+            console.log('[TWR RolesTabs] Fetching aggregated roles...');
+            let roles = await fetchAggregatedRoles();
+            console.log('[TWR RolesTabs] Aggregated roles fetched:', roles?.length || 0);
+            
+            console.log('[TWR RolesTabs] Fetching scan history...');
+            const history = await fetchScanHistory();
+            console.log('[TWR RolesTabs] Scan history fetched:', history?.length || 0);
+            let dataSource = 'scans';
         
         // Fallback to dictionary if no aggregated roles
         if (roles.length === 0) {
+            console.log('[TWR RolesTabs] No aggregated roles, falling back to dictionary...');
             roles = await fetchDictionary();
             dataSource = 'dictionary';
-            console.log('[TWR RolesTabs] Falling back to dictionary data');
+            console.log('[TWR RolesTabs] Dictionary roles loaded:', roles?.length || 0);
         }
         
         // Update stat cards
@@ -230,6 +244,8 @@
         // Get unique categories
         const categories = new Set(roles.map(r => r.category).filter(Boolean));
         
+        console.log('[TWR RolesTabs] Stats computed: roles=', totalRoles, 'mentions=', totalMentions, 'docs=', totalDocs, 'categories=', categories.size);
+        
         // Update elements
         const els = {
             roles: document.getElementById('total-roles-count'),
@@ -240,6 +256,12 @@
             sidebarResp: document.getElementById('sidebar-resp-count')
         };
         
+        console.log('[TWR RolesTabs] DOM elements found:', 
+            'roles=', !!els.roles, 
+            'resp=', !!els.resp, 
+            'docs=', !!els.docs, 
+            'interactions=', !!els.interactions);
+        
         if (els.roles) els.roles.textContent = totalRoles;
         if (els.resp) els.resp.textContent = totalMentions;
         if (els.docs) els.docs.textContent = totalDocs;
@@ -249,6 +271,7 @@
         
         // Show data source indicator
         const topRolesList = document.getElementById('top-roles-list');
+        console.log('[TWR RolesTabs] top-roles-list found:', !!topRolesList);
         if (topRolesList) {
             let sourceNote = '';
             if (dataSource === 'dictionary') {
@@ -313,7 +336,12 @@
             chartContainer.innerHTML = '<p class="text-muted text-center">No data for chart</p>';
         }
         
+        console.log('[TWR RolesTabs] === renderOverview COMPLETE ===');
         refreshIcons();
+        } catch (error) {
+            console.error('[TWR RolesTabs] === renderOverview ERROR ===', error);
+            throw error;
+        }
     }
     
     /**
@@ -372,29 +400,39 @@
     }
     
     async function renderDetails() {
-        console.log('[TWR RolesTabs] Rendering Details...');
+        console.log('[TWR RolesTabs] === renderDetails START ===');
         
-        const container = document.getElementById('roles-report-content');
-        if (!container) return;
-        
-        // Initialize controls
-        initDetailsControls();
-        
-        let roles = await fetchAggregatedRoles();
-        let dataSource = 'scans';
-        
-        // Fallback to dictionary if no aggregated roles
-        if (roles.length === 0) {
-            roles = await fetchDictionary();
-            dataSource = 'dictionary';
-        }
-        
-        if (roles.length === 0) {
-            container.innerHTML = emptyState('users', 'No Roles Found', 
-                'Seed the Role Dictionary or scan documents with "Role Extraction" enabled to detect organizational roles.');
-            refreshIcons();
-            return;
-        }
+        try {
+            const container = document.getElementById('roles-report-content');
+            console.log('[TWR RolesTabs] roles-report-content found:', !!container);
+            if (!container) {
+                console.error('[TWR RolesTabs] CRITICAL: roles-report-content container NOT FOUND');
+                return;
+            }
+            
+            // Initialize controls
+            initDetailsControls();
+            
+            console.log('[TWR RolesTabs] Fetching roles for Details...');
+            let roles = await fetchAggregatedRoles();
+            let dataSource = 'scans';
+            console.log('[TWR RolesTabs] Aggregated roles:', roles?.length || 0);
+            
+            // Fallback to dictionary if no aggregated roles
+            if (roles.length === 0) {
+                console.log('[TWR RolesTabs] Falling back to dictionary...');
+                roles = await fetchDictionary();
+                dataSource = 'dictionary';
+                console.log('[TWR RolesTabs] Dictionary roles:', roles?.length || 0);
+            }
+            
+            if (roles.length === 0) {
+                console.log('[TWR RolesTabs] No roles found, showing empty state');
+                container.innerHTML = emptyState('users', 'No Roles Found', 
+                    'Seed the Role Dictionary or scan documents with "Role Extraction" enabled to detect organizational roles.');
+                refreshIcons();
+                return;
+            }
         
         // Source indicator
         let sourceNote = '';
@@ -480,7 +518,12 @@
             filterDetailsRoles(searchInput.value);
         }
         
+        console.log('[TWR RolesTabs] === renderDetails COMPLETE ===');
         refreshIcons();
+        } catch (error) {
+            console.error('[TWR RolesTabs] === renderDetails ERROR ===', error);
+            throw error;
+        }
     }
     
     /**
@@ -1459,32 +1502,38 @@
      * v3.0.59: Fixed to show role_count from API, added action buttons
      */
     async function renderDocuments() {
-        console.log('[TWR RolesTabs] Rendering Documents...');
+        console.log('[TWR RolesTabs] === renderDocuments START ===');
         
-        const tbody = document.getElementById('document-log-body');
-        if (!tbody) {
-            console.warn('[TWR RolesTabs] document-log-body not found');
-            return;
-        }
-        
-        const history = await fetchScanHistory();
-        
-        if (history.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted);">
-                <i data-lucide="file-text" style="display:block;margin:0 auto 12px;width:32px;height:32px;opacity:0.5;"></i>
-                No scan history. Open and scan documents to see them here.
-            </td></tr>`;
-            refreshIcons();
-            return;
-        }
-        
-        tbody.innerHTML = history.map(scan => {
-            const date = new Date(scan.scan_time || scan.scanned_at || scan.created_at);
-            const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            const roleCount = scan.role_count ?? 0;
-            const issueCount = scan.issue_count ?? 0;
-            const grade = scan.grade || '-';
-            const gradeClass = grade === 'A' ? 'text-success' : grade === 'B' ? 'text-info' : grade === 'C' ? 'text-warning' : grade === 'D' || grade === 'F' ? 'text-error' : '';
+        try {
+            const tbody = document.getElementById('document-log-body');
+            console.log('[TWR RolesTabs] document-log-body found:', !!tbody);
+            if (!tbody) {
+                console.error('[TWR RolesTabs] CRITICAL: document-log-body NOT FOUND');
+                return;
+            }
+            
+            console.log('[TWR RolesTabs] Fetching scan history...');
+            const history = await fetchScanHistory();
+            console.log('[TWR RolesTabs] History fetched:', history?.length || 0);
+            
+            if (history.length === 0) {
+                console.log('[TWR RolesTabs] No history, showing empty state');
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted);">
+                    <i data-lucide="file-text" style="display:block;margin:0 auto 12px;width:32px;height:32px;opacity:0.5;"></i>
+                    No scan history. Open and scan documents to see them here.
+                </td></tr>`;
+                refreshIcons();
+                return;
+            }
+            
+            console.log('[TWR RolesTabs] Rendering', history.length, 'history items...');
+            tbody.innerHTML = history.map(scan => {
+                const date = new Date(scan.scan_time || scan.scanned_at || scan.created_at);
+                const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                const roleCount = scan.role_count ?? 0;
+                const issueCount = scan.issue_count ?? 0;
+                const grade = scan.grade || '-';
+                const gradeClass = grade === 'A' ? 'text-success' : grade === 'B' ? 'text-info' : grade === 'C' ? 'text-warning' : grade === 'D' || grade === 'F' ? 'text-error' : '';
             
             return `<tr data-scan-id="${scan.scan_id}" data-doc-id="${scan.document_id || ''}">
                 <td style="padding:10px;"><strong>${escapeHtml(scan.filename || 'Unknown')}</strong></td>
@@ -1503,8 +1552,13 @@
             </tr>`;
         }).join('');
         
+        console.log('[TWR RolesTabs] === renderDocuments COMPLETE ===');
         refreshIcons();
         initDocumentLogActions();
+        } catch (error) {
+            console.error('[TWR RolesTabs] === renderDocuments ERROR ===', error);
+            throw error;
+        }
     }
     
     /**
@@ -1605,43 +1659,49 @@
         }
         
         // Render tab content
-        switch (tabName) {
-            case 'overview':
-                await renderOverview();
-                break;
-            case 'details':
-                await renderDetails();
-                break;
-            case 'matrix':
-                await renderMatrix();
-                break;
-            case 'adjudication':
-                await renderAdjudication();
-                break;
-            case 'documents':
-                await renderDocuments();
-                break;
-            case 'graph':
-                // v3.0.63: Use our own initGraphControls (same pattern as other tabs)
-                initGraphControls();
-                // Render the graph
-                if (typeof window.TWR?.Roles?.renderRolesGraph === 'function') {
-                    window.TWR.Roles.renderRolesGraph();
-                } else if (typeof window.renderRolesGraph === 'function') {
-                    window.renderRolesGraph();
-                } else {
-                    console.warn('[TWR RolesTabs] renderRolesGraph not available');
-                }
-                break;
-            case 'dictionary':
-                // Dictionary uses our other fix
-                if (typeof window.TWR?.DictFix?.loadDictionary === 'function') {
-                    window.TWR.DictFix.loadDictionary();
-                }
-                break;
-            case 'crossref':
-                await renderCrossRef();
-                break;
+        try {
+            console.log('[TWR RolesTabs] Starting render for tab:', tabName);
+            switch (tabName) {
+                case 'overview':
+                    await renderOverview();
+                    break;
+                case 'details':
+                    await renderDetails();
+                    break;
+                case 'matrix':
+                    await renderMatrix();
+                    break;
+                case 'adjudication':
+                    await renderAdjudication();
+                    break;
+                case 'documents':
+                    await renderDocuments();
+                    break;
+                case 'graph':
+                    // v3.0.63: Use our own initGraphControls (same pattern as other tabs)
+                    initGraphControls();
+                    // Render the graph
+                    if (typeof window.TWR?.Roles?.renderRolesGraph === 'function') {
+                        window.TWR.Roles.renderRolesGraph();
+                    } else if (typeof window.renderRolesGraph === 'function') {
+                        window.renderRolesGraph();
+                    } else {
+                        console.warn('[TWR RolesTabs] renderRolesGraph not available');
+                    }
+                    break;
+                case 'dictionary':
+                    // Dictionary uses our other fix
+                    if (typeof window.TWR?.DictFix?.loadDictionary === 'function') {
+                        window.TWR.DictFix.loadDictionary();
+                    }
+                    break;
+                case 'crossref':
+                    await renderCrossRef();
+                    break;
+            }
+            console.log('[TWR RolesTabs] Render complete for tab:', tabName);
+        } catch (error) {
+            console.error('[TWR RolesTabs] ERROR rendering tab:', tabName, error);
         }
         
         console.log('[TWR RolesTabs] === Tab switch complete ===');
@@ -1873,6 +1933,10 @@
             labelsSelect._tabsFixInitialized = true;
             labelsSelect.addEventListener('change', function() {
                 console.log('[TWR RolesTabs] Labels changed to:', this.value);
+                // Must set GraphState.labelMode before calling updateGraphLabelVisibility
+                if (window.TWR?.Roles?.GraphState) {
+                    window.TWR.Roles.GraphState.labelMode = this.value;
+                }
                 if (typeof window.TWR?.Roles?.updateGraphLabelVisibility === 'function') {
                     window.TWR.Roles.updateGraphLabelVisibility();
                 }
@@ -2088,6 +2152,6 @@
     // Install override after a short delay to ensure other scripts have loaded
     setTimeout(installShowModalOverride, 100);
     
-    console.log('[TWR RolesTabs] Module loaded v3.0.64 - exposed at window.TWR.RolesTabs');
+    console.log('[TWR RolesTabs] Module loaded v3.0.66 (diagnostic) - exposed at window.TWR.RolesTabs');
     
 })();
