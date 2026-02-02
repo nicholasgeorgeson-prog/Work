@@ -44,11 +44,11 @@ def print_error(msg):
 
 
 def check_python_version():
-    """Check that Python 3.10 is being used."""
+    """Check that Python 3.12 is being used."""
     version = sys.version_info
-    if version.major != 3 or version.minor != 10:
-        print_error(f"Python 3.10 required, but you have {version.major}.{version.minor}")
-        print("Please install Python 3.10 and run this script with it.")
+    if version.major != 3 or version.minor != 12:
+        print_error(f"Python 3.12 required, but you have {version.major}.{version.minor}")
+        print("Please install Python 3.12 and run this script with it.")
         return False
     print_success(f"Python version: {version.major}.{version.minor}.{version.micro}")
     return True
