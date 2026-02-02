@@ -1,0 +1,360 @@
+{
+  "version": "3.0.125",
+  "release_date": "2026-02-01",
+  "core_version": "3.0.125",
+  "name": "TechWriterReview",
+  "description": "Document analysis and review tool for technical writers",
+  "changelog": [
+    {
+      "version": "3.0.125",
+      "date": "2026-02-01",
+      "changes": [
+        "UI: Comprehensive Hyperlink Validator visual overhaul with modern glassmorphism design",
+        "NEW: Animated stat cards with color-coded status icons and hover effects",
+        "NEW: Donut chart showing URL status distribution with smooth animations",
+        "NEW: Response time histogram with color-coded speed bands",
+        "NEW: Domain health heatmap showing success rates by domain (clickable to filter)",
+        "NEW: Enhanced progress bar with shimmer animation and speed stats",
+        "NEW: Expandable error detail panels with redirect chain visualization",
+        "NEW: Real-time streaming indicator showing current URL being validated",
+        "NEW: Skeleton loading states for better UX during data fetching",
+        "NEW: Rescan button UI for bot-protected sites with visual styling",
+        "NEW: 3D Domain Health Carousel - interactive rotating cards showing domain health status",
+        "NEW: Carousel features: drag-to-spin, click-to-filter, auto-rotate, health rings with percentages",
+        "NEW: Domain filter clear functionality with indicator badges",
+        "NEW: Large dataset support - shows top 15 domains with search and expand options",
+        "FIX: History panel can now be collapsed/expanded with toggle button",
+        "FIX: URL text no longer cut off - full URLs display with word wrap",
+        "FIX: Modal window properly centered on screen",
+        "IMPROVED: Setup.bat now includes Playwright installation (Step 8/8)",
+        "CSS: 900+ lines of modern CSS with gradients, animations, dark mode support"
+      ]
+    },
+    {
+      "version": "3.0.124",
+      "date": "2026-02-01",
+      "changes": [
+        "FEATURE: Headless Browser Rescan for bot-protected sites (defense.gov, dla.mil, etc.)",
+        "NEW: /api/hyperlink-validator/rescan endpoint to retry failed URLs with real Chrome browser",
+        "NEW: /api/hyperlink-validator/rescan/job/<id> to rescan all failures from a validation job",
+        "NEW: Stealth mode bypasses sophisticated bot detection (Akamai, Cloudflare, etc.)",
+        "NEW: Automatic HEAD→GET fallback when sites block HEAD requests",
+        "IMPROVED: Uses real Chrome browser channel for better bot protection bypass",
+        "REQUIRES: pip install playwright && playwright install chromium (optional, for rescan feature)"
+      ]
+    },
+    {
+      "version": "3.0.123",
+      "date": "2026-02-01",
+      "changes": [
+        "FEATURE: CAC/PIV Client Certificate Authentication for .mil sites and federal PKI resources",
+        "FEATURE: Custom CA Bundle support for DoD/Federal PKI certificate validation",
+        "FEATURE: Proxy Server support for enterprise network environments",
+        "IMPROVED: Simplified Hyperlink Validation to two modes: Offline (format only) and Validator (full HTTP)",
+        "IMPROVED: Validator mode optimized for government (.mil/.gov) and enterprise sites",
+        "NEW: Advanced Authentication Settings panel in Settings → Hyperlink Validation",
+        "NEW: Windows SSO (NTLM/Negotiate) always enabled when available",
+        "NEW: Extended timeouts and realistic browser headers for slow government servers",
+        "NEW: HEAD/GET fallback when HEAD requests are blocked (common on government sites)",
+        "NEW: Auth Required (401) and Rate Limited (429) status types with appropriate handling",
+        "REMOVED: ps1_validator mode (consolidated into enhanced validator mode)",
+        "DOCS: Comprehensive authentication options documentation with CAC/PIV setup guide"
+      ]
+    },
+    {
+      "version": "3.0.122",
+      "date": "2026-02-01",
+      "changes": [
+        "FEATURE: Persistent Link Exclusions - URL exclusion rules stored in SQLite database",
+        "FEATURE: Scan History Storage - Historical hyperlink scans recorded with summary statistics",
+        "NEW: Link History modal with Exclusions and Scans tabs via 'Links' nav button",
+        "NEW: API endpoints /api/hyperlink-validator/exclusions/* and /history/*",
+        "NEW: HyperlinkValidatorStorage class for database operations",
+        "NEW: Match types: contains, exact, prefix, suffix, regex",
+        "IMPROVED: HyperlinkValidatorState loads exclusions from database on init"
+      ]
+    },
+    {
+      "version": "3.0.121",
+      "date": "2026-02-01",
+      "changes": [
+        "FIX: Portfolio 'Open in Review' now correctly loads documents with full UI display",
+        "IMPROVED: Responsive Hyperlinks Panel - viewport-relative heights (50vh/25vh)",
+        "IMPROVED: Clickable Hyperlinks - click any row to open URL in new tab for verification",
+        "NEW: Visual hover feedback with external-link icon on hyperlink rows",
+        "NEW: Test document hyperlink_test.docx with working and broken link examples"
+      ]
+    },
+    {
+      "version": "3.0.120",
+      "date": "2026-02-01",
+      "changes": [
+        "FEATURE: 3D Carousel for Issues by Section in Document Analytics",
+        "NEW: Drag-to-spin rotation and slider navigation for section boxes",
+        "NEW: Click on carousel box to filter issues to that section",
+        "NEW: Color-coded borders based on issue density (none/low/medium/high)",
+        "IMPROVED: Touch support for mobile devices"
+      ]
+    },
+    {
+      "version": "3.0.119",
+      "date": "2026-02-01",
+      "changes": [
+        "FIX: Document Filter Dropdown - correctly filters roles by document in Roles Studio",
+        "FIX: CSS selector bug in roles tab switching (.roles-nav-btn.active → .roles-nav-item.active)",
+        "IMPROVED: Help Modal sizing - 85vw × 80vh with opaque backdrop",
+        "DOCS: Comprehensive Help Documentation Overhaul with Fix Assistant v2, Hyperlink Health, Batch Processing sections",
+        "DOCS: Added 8 Core Capabilities cards, Checker List table, Keyboard shortcuts tables"
+      ]
+    },
+    {
+      "version": "3.0.116",
+      "date": "2026-02-01",
+      "changes": [
+        "FIX: Batch memory - streaming file uploads to reduce memory usage (BUG-M02)",
+        "FIX: SessionManager - automatic cleanup thread prevents memory growth (BUG-M03)",
+        "FIX: Batch errors - full tracebacks now logged for debugging (BUG-M04)",
+        "FIX: localStorage key collision - unique document IDs prevent overwriting (BUG-M05)",
+        "NEW: MAX_BATCH_SIZE (10) and MAX_BATCH_TOTAL_SIZE (100MB) constants defined (BUG-L07)",
+        "NEW: SessionManager.start_auto_cleanup() runs hourly to remove sessions > 24h old",
+        "NEW: FixAssistantState.generateDocumentId() creates collision-free storage keys"
+      ]
+    },
+    {
+      "version": "3.0.115",
+      "date": "2026-02-01",
+      "changes": [
+        "FEATURE: Document Type Profiles - Customize which checks are performed for PrOP, PAL, FGOST, SOW",
+        "NEW: Settings > Document Profiles tab with checker grid for each document type",
+        "NEW: Custom profiles persist in localStorage across sessions (user-specific)",
+        "NEW: Select All, Clear All, Reset to Default buttons for profile management",
+        "NEW: First-time user prompt to configure document profiles on initial app launch",
+        "IMPROVED: applyPreset now uses custom profiles when available for document type presets"
+      ]
+    },
+    {
+      "version": "3.0.110",
+      "date": "2026-02-01",
+      "changes": [
+        "FEATURE: Hyperlink Validator - Export highlighted DOCX with broken links marked in red/yellow/strikethrough",
+        "FEATURE: Hyperlink Validator - Export highlighted Excel with broken link rows in red background",
+        "NEW: API endpoints /api/hyperlink-validator/export-highlighted/docx and /excel",
+        "NEW: 'Export Highlighted' button in Hyperlink Validator modal (enabled after file validation)"
+      ]
+    },
+    {
+      "version": "3.0.109",
+      "date": "2026-01-28",
+      "changes": [
+        "FIX: Batch Modal - Now opens correctly (Issue #1)",
+        "FIX: Hyperlinks - Now extracts HYPERLINK field codes from DOCX files (Issue #2)",
+        "FIX: Acronym Highlighting - Uses word boundary regex to prevent false positives (Issue #3)",
+        "FIX: Fix Assistant Premium - Complete implementation with working controls (Issue #4)",
+        "FIX: Statement Forge - 'No document loaded' fixed with consistent state checks (Issue #5)",
+        "FIX: Scan History - Added /stats, /clear, /recall API endpoints (Issue #6)",
+        "FIX: Triage Mode - State.documentId now set after fresh review (Issue #7)",
+        "FIX: Document Filter - Now populates from scan history (Issue #8)",
+        "FIX: Role-Document Matrix - Improved response validation and error handling (Issue #9)",
+        "FIX: Export Modal Badge Overflow - Badges now wrap and truncate properly (Issue #10)",
+        "FIX: Comment Placement - Smart quote normalization and multi-strategy matching (Issue #11)",
+        "FIX: Version History - Added missing versions to help documentation (Issue #12)",
+        "FIX: Updater Rollback - Uses correct endpoint, button enable/disable fixed (Issue #13)",
+        "FIX: No Updates Empty State - Proper centered styling with icon (Issue #14)",
+        "FIX: Logo 404 - Fixed missing logo reference (Issue #15)",
+        "IMPROVED: Statement extraction patterns - added responsibility/accountability phrases",
+        "IMPROVED: Fallback extraction for documents without clear section structure",
+        "IMPROVED: Role-Document Matrix error display with retry button"
+      ]
+    },
+    {
+      "version": "3.0.108",
+      "date": "2026-01-28",
+      "changes": [
+        "FIX: Document filter dropdown now populates with scanned document names (BUG-009)",
+        "FIX: Added source_documents field to role extraction data"
+      ]
+    },
+    {
+      "version": "3.0.107",
+      "date": "2026-01-28",
+      "changes": [
+        "FIX: Role Details tab now shows sample_contexts from documents (BUG-007)",
+        "FIX: Role-Doc Matrix shows helpful guidance when empty instead of stuck loading (BUG-008)",
+        "UX: Matrix tab explains how to populate cross-document data"
+      ]
+    },
+    {
+      "version": "3.0.106",
+      "date": "2026-01-28",
+      "changes": [
+        "FIX: Fix Assistant v2 Document Viewer empty - paragraphs/page_map/headings now returned from core.py (BUG-006)",
+        "FIX: Remaining deprecated datetime.utcnow() calls in config_logging.py (BUG-M01)"
+      ]
+    },
+    {
+      "version": "3.0.105",
+      "date": "2026-01-28",
+      "changes": [
+        "FIX: Report generator API signature mismatch - generate() now returns bytes when output_path not provided (BUG-001)",
+        "FIX: Learner stats endpoint now uses standard {success, data} response envelope (BUG-002)",
+        "FIX: Acronym checker mode handling - strict mode now properly flags common acronyms (BUG-003)",
+        "FIX: Role classification tiebreak - 'Report Engineer' now correctly classified as role (BUG-004)",
+        "FIX: Comment pack now includes location hints from hyperlink_info (BUG-005)",
+        "MAINT: Updated deprecated datetime.utcnow() calls to datetime.now(timezone.utc) (WARN-001)"
+      ]
+    },
+    {
+      "version": "3.0.104",
+      "date": "2026-01-28",
+      "changes": [
+        "FIX: Fix Assistant v2 load failure - BodyText style conflict resolved",
+        "FIX: Logger reserved keyword conflict in static file security",
+        "TEST: Updated test expectations for static file security responses",
+        "TEST: Fixed CSS test locations for modularized stylesheets"
+      ]
+    },
+    {
+      "version": "3.0.103",
+      "date": "2026-01-28",
+      "changes": [
+        "SECURITY: innerHTML safety audit - all 143 usages documented and verified (Task A)",
+        "REFACTOR: CSS modularized into 10 logical files for maintainability (Task B)",
+        "QUALITY: Test suite modernized with docstrings and FAV2 API tests (Task C)",
+        "QUALITY: Exception handling refined with specific catches (Task D)",
+        "DOCS: Added comprehensive code comments throughout JavaScript",
+        "TESTS: Added TestFixAssistantV2API, TestBatchLimits, TestSessionCleanup classes"
+      ]
+    },
+    {
+      "version": "3.0.102",
+      "date": "2026-01-28",
+      "changes": [
+        "STABILIZATION: Intermediate release between 3.0.101 and 3.0.103",
+        "FIX: Minor adjustments to error handling patterns"
+      ]
+    },
+    {
+      "version": "3.0.101",
+      "date": "2026-01-28",
+      "changes": [
+        "REFACTOR: Standardized API error responses with correlation IDs (ISSUE-004)",
+        "REFACTOR: Centralized document type detection into get_document_extractor() helper (ISSUE-008)",
+        "REFACTOR: Centralized user-facing strings into STRINGS constant (ISSUE-009)",
+        "DOCS: Added comprehensive JSDoc comments to feature modules (ISSUE-010)",
+        "CODE REVIEW: Completed remaining 4 of 12 issues from comprehensive code review audit"
+      ]
+    },
+    {
+      "version": "3.0.100",
+      "date": "2026-01-28",
+      "changes": [
+        "SECURITY: Added ReDoS protection with safe regex wrappers (ISSUE-001)",
+        "PERFORMANCE: Enabled WAL mode for SQLite with busy_timeout for concurrent access (ISSUE-002)",
+        "PERFORMANCE: Added file size validation for large document protection (ISSUE-003)",
+        "SECURITY: Enhanced input validation on learner dictionary API (ISSUE-005)",
+        "FIX: State.entities now properly reset on new document load (ISSUE-006)",
+        "FIX: Added cleanup() function to FixAssistantState to prevent memory leaks (ISSUE-007)",
+        "CODE REVIEW: Addressed 7 of 12 issues from comprehensive code review audit"
+      ]
+    },
+    {
+      "version": "3.0.99",
+      "date": "2026-01-28",
+      "changes": [
+        "STABILIZATION: Intermediate release between 3.0.98 and 3.0.100",
+        "FIX: Minor bug fixes from 3.0.98 testing"
+      ]
+    },
+    {
+      "version": "3.0.98",
+      "date": "2026-01-28",
+      "changes": [
+        "FIX: Export modal crash (BUG-002)",
+        "FIX: Context highlighting showing wrong text (BUG-003)",
+        "FIX: Restored hyperlink status panel (BUG-004)",
+        "FIX: Restored Role-Document matrix tab (BUG-009)",
+        "FIX: Double browser tab on startup (BUG-001)",
+        "FIX: Version history gaps in Help (BUG-005)",
+        "IMPROVED: Role Details tab with context preview (BUG-007)",
+        "IMPROVED: Document filter dropdown in Role Studio (BUG-008)",
+        "IMPROVED: Comprehensive TWR_LESSONS_LEARNED.md updates (BUG-006)"
+      ]
+    },
+    {
+      "version": "3.0.97",
+      "date": "2026-01-28",
+      "changes": [
+        "NEW: Fix Assistant v2 - Complete premium document review interface",
+        "NEW: Two-panel document viewer with page navigation and highlighting",
+        "NEW: Mini-map showing document overview with fix position markers",
+        "NEW: Undo/redo capability for all review decisions",
+        "NEW: Search and filter fixes by text, category, or confidence",
+        "NEW: Save progress and continue later (localStorage persistence)",
+        "NEW: Learning from user decisions (pattern tracking, no AI)",
+        "NEW: Custom dictionary for terms to always skip",
+        "NEW: Live preview mode showing changes inline",
+        "NEW: Split-screen view (original vs fixed document)",
+        "NEW: PDF summary report generation",
+        "NEW: Accessibility features (high contrast, screen reader support)",
+        "NEW: Enhanced keyboard shortcuts (A=accept, R=reject, S=skip, U=undo)",
+        "NEW: Optional sound effects for actions (Web Audio API)",
+        "NEW: Rejected fixes exported as document comments with reviewer notes",
+        "IMPROVED: Export now handles both accepted fixes (track changes) and rejected fixes (comments)",
+        "API: Added /api/learner/* endpoints for pattern learning",
+        "API: Added /api/report/generate endpoint for PDF reports"
+      ]
+    },
+    {
+      "version": "3.0.96",
+      "date": "2026-01-27",
+      "changes": [
+        "NEW: Fix Assistant - premium triage-style interface for reviewing automatic fixes",
+        "NEW: Keyboard shortcuts in Fix Assistant (A=accept, R=reject, S=skip, arrows=nav)",
+        "NEW: Confidence tiers (Safe/Review/Caution) for each proposed fix",
+        "NEW: Context display showing surrounding text with highlighted change",
+        "NEW: Before/After comparison with clear visual distinction",
+        "NEW: Bulk actions (Accept All Safe, Accept All, Reject All)",
+        "IMPROVED: Export now uses Fix Assistant selections instead of all fixes",
+        "IMPROVED: Progress tracking shows reviewed/total count",
+        "UI: Premium styling with confidence badges, progress bar, keyboard hints"
+      ]
+    },
+    {
+      "version": "3.0.95",
+      "date": "2026-01-27",
+      "changes": [
+        "FIX: Version display consistency - all UI components now show same version",
+        "FIX: About section simplified - shows only author name",
+        "FIX: Heatmap clicking - Category × Severity heatmap now filters issues on click",
+        "NEW: Hyperlink status panel - visual display of checked hyperlinks and validation status",
+        "IMPROVED: Section heatmap click feedback with toast messages"
+      ]
+    },
+    {
+      "version": "3.0.94",
+      "date": "2026-01-27",
+      "changes": [
+        "STABILIZATION: Intermediate release between 3.0.93 and 3.0.95",
+        "FIX: Refinements to acronym detection logic"
+      ]
+    },
+    {
+      "version": "3.0.93",
+      "date": "2026-01-27",
+      "changes": [
+        "ACRONYM: Added 100+ common ALL CAPS words to COMMON_CAPS_SKIP",
+        "ACRONYM: Added PDF word fragment detection",
+        "TESTING: Reduced false positive acronym flagging by ~55%"
+      ]
+    },
+    {
+      "version": "3.0.92",
+      "date": "2026-01-27",
+      "changes": [
+        "FIXED: PDF punctuation false positives",
+        "FIXED: Acronym false positives",
+        "ADDED: PDF hyperlink extraction via PyMuPDF"
+      ]
+    }
+  ]
+}

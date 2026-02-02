@@ -1,0 +1,138 @@
+/**
+ * TechWriterReview - Scan History Styles
+ * Version: 3.0.103
+ * 
+ * Scan history panel and scan profiles.
+ * Classes: .scan-*, .history-*, .profile-*
+ */
+
+/* ===== SCAN HISTORY ===== */
+.scan-history-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.scan-history-filters {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+}
+
+.scan-history-filters input {
+    flex: 1;
+    max-width: 300px;
+}
+
+.scan-history-table {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.data-table th,
+.data-table td {
+    padding: var(--space-3) var(--space-4);
+    text-align: left;
+    border-bottom: 1px solid var(--border-default);
+}
+
+.data-table th {
+    background: var(--bg-elevated);
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+}
+
+.data-table tbody tr:hover {
+    background: var(--bg-hover);
+}
+
+.change-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+}
+
+.change-indicator.added { color: var(--error); }
+.change-indicator.removed { color: var(--success); }
+.change-indicator.unchanged { color: var(--text-muted); }
+
+/* ===== SCAN PROFILES ===== */
+.profile-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+}
+
+.profile-empty {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-style: italic;
+    padding: var(--space-2);
+}
+
+.profile-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background var(--duration-fast);
+}
+
+.profile-item:hover {
+    background: var(--bg-hover);
+}
+
+.profile-item.default {
+    border-left: 3px solid var(--accent);
+}
+
+.profile-item-name {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.profile-item-actions {
+    display: flex;
+    gap: var(--space-1);
+    opacity: 0;
+    transition: opacity var(--duration-fast);
+}
+
+.profile-item:hover .profile-item-actions {
+    opacity: 1;
+}
+
+.profile-actions {
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--border-muted);
+}
+
+.profile-preview {
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+    margin-top: var(--space-3);
+}
+
+.profile-preview ul {
+    margin: var(--space-2) 0 0 0;
+    padding-left: var(--space-4);
+    font-size: 12px;
+    color: var(--text-secondary);
+    max-height: 150px;
+    overflow-y: auto;
+}
+

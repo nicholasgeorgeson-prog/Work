@@ -1,0 +1,17 @@
+======================================================================
+TECHWRITERREVIEW STARTUP ERROR
+======================================================================
+Timestamp: 2026-01-28T18:56:12.012555
+Context: Flask imports - is Flask installed?
+Error Type: ModuleNotFoundError
+Error Message: No module named 'flask'
+
+Full Traceback:
+Traceback (most recent call last):
+  File "/Users/nick/Desktop/Work_Tools/TechWriterReview/app.py", line 80, in <module>
+    from flask import (
+ModuleNotFoundError: No module named 'flask'
+
+======================================================================
+To troubleshoot: Upload this file to Claude AI
+======================================================================

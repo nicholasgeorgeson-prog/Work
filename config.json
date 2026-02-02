@@ -1,0 +1,49 @@
+{
+  "update_path": "",
+  "auto_update": false,
+  "reviewer_name": "TechWriter Review",
+  "security": {
+    "allow_cdn_fallback": false,
+    "comment": "Set allow_cdn_fallback to true if vendor libraries failed to download and CDN is needed"
+  },
+  "sharing": {
+    "shared_dictionary_path": "",
+    "comment": "Set shared_dictionary_path to a network folder path (e.g., \\\\server\\share\\twr) to enable team dictionary sharing"
+  },
+  "acronym_settings": {
+    "ignore_common_acronyms": false,
+    "comment": "When false (strict mode), all acronyms must be defined in the document. When true, common well-known acronyms are suppressed."
+  },
+  "hyperlink_settings": {
+    "validation_mode": "validator",
+    "client_cert_path": "",
+    "client_key_path": "",
+    "ca_bundle_path": "",
+    "proxy_url": "",
+    "verify_ssl": true,
+    "comment": "Validation modes: 'offline' (format only) or 'validator' (full HTTP with auth). For CAC/PIV: set client_cert_path and client_key_path. For .mil/.gov PKI: set ca_bundle_path to DoD root CA bundle. For enterprise networks: set proxy_url."
+  },
+  "default_checks": {
+    "check_acronyms": true,
+    "check_passive_voice": true,
+    "check_weak_language": true,
+    "check_wordy_phrases": true,
+    "check_nominalization": true,
+    "check_jargon": true,
+    "check_ambiguous_pronouns": true,
+    "check_requirements_language": true,
+    "check_gender_language": true,
+    "check_punctuation": true,
+    "check_sentence_length": true,
+    "check_repeated_words": true,
+    "check_capitalization": true,
+    "check_contractions": true,
+    "check_references": true,
+    "check_document_structure": true,
+    "check_tables_figures": true,
+    "check_track_changes": true,
+    "check_consistency": true,
+    "check_lists": true,
+    "check_hyperlinks": true
+  }
+}

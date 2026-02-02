@@ -1,0 +1,3320 @@
+/**
+ * TechWriterReview - Roles Studio Styles
+ * Version: 3.0.103
+ * 
+ * Role management, network graph, RACI matrix, and adjudication.
+ * Classes: .role-*, .graph-*, .raci-*, .node-*, .adj-*
+ */
+
+/* ============================================================
+   ENHANCED STYLES v2.6.0
+   ============================================================ */
+
+/**
+ * TechWriterReview Enhanced Styles v2.6.0
+ * Additional styles for new features
+ * Append this to your existing style.css
+ */
+
+/* =============================================================================
+   ROLE NETWORK VISUALIZATION
+   ============================================================================= */
+
+#role-network-svg {
+    width: 100%;
+    height: 100%;
+}
+
+#role-network-svg circle {
+    cursor: pointer;
+    transition: transform 0.2s, filter 0.2s;
+}
+
+#role-network-svg circle:hover {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+}
+
+#role-network-svg line {
+    stroke-opacity: 0.6;
+}
+
+#role-network-svg text {
+    pointer-events: none;
+}
+
+.role-detail-section {
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.role-detail-section strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.role-detail-section ul {
+    margin: 5px 0;
+    padding-left: 20px;
+}
+
+.role-detail-section li {
+    margin-bottom: 4px;
+    color: #666;
+    font-size: 13px;
+}
+
+.action-types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.action-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    background: #e3f2fd;
+    color: #1976d2;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #666;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+/* Simple roles list fallback */
+.roles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.role-category {
+    color: #1976d2;
+    background: #e3f2fd;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.role-count {
+    color: #666;
+}
+
+/* Dashboard role summary */
+.roles-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.role-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.role-item .role-name {
+    font-weight: 500;
+    color: #333;
+}
+
+.role-item .role-count {
+    color: #666;
+    font-size: 12px;
+}
+
+
+/* ===== ENHANCED ROLES PAGE ===== */
+
+.roles-tab {
+    padding: var(--space-2) var(--space-4);
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    transition: all var(--duration-fast);
+}
+
+.roles-tab:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.roles-tab.active {
+    background: var(--accent-subtle);
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
+}
+
+/* v3.0.66 FIX: Add missing fadeIn keyframes that .roles-section references */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* v3.0.70 FIX: Add display rules for .active class that roles-tabs-fix.js expects */
+#modal-roles .roles-section {
+    display: none !important;
+}
+
+/* v3.0.72: Use flex to fill available height */
+#modal-roles .roles-section.active {
+    display: flex !important;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    animation: fadeIn 0.2s ease;
+    opacity: 1;
+}
+
+/* v3.0.72: Make specific sections fill available space */
+#roles-overview,
+#roles-details,
+#roles-adjudication,
+#roles-documents,
+#roles-dictionary,
+#roles-crossref {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+/* v3.0.72: Make scrollable content areas expand */
+#roles-overview > div:last-child,
+#roles-details .details-list,
+#roles-documents .document-log-table-container {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 200px;
+}
+
+/* Roles Summary Grid */
+.roles-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+}
+
+.roles-summary-card {
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    text-align: center;
+    border: 1px solid var(--border-default);
+}
+
+.roles-summary-card .summary-icon {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto var(--space-2);
+    background: var(--accent-subtle);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.roles-summary-card .summary-icon svg {
+    width: 20px;
+    height: 20px;
+    color: var(--accent);
+}
+
+.roles-summary-card .summary-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.roles-summary-card .summary-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: var(--space-1);
+}
+
+/* v3.0.12: Entity Audit Bar */
+.entity-audit-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    margin-bottom: var(--space-4);
+    background: var(--bg-subtle);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-default);
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.entity-audit-bar svg {
+    width: 16px;
+    height: 16px;
+    color: var(--accent-primary);
+    flex-shrink: 0;
+}
+
+.entity-audit-bar.has-excluded {
+    background: #fffbeb;
+    border-color: #f59e0b;
+}
+
+.entity-audit-bar.has-excluded svg {
+    color: #f59e0b;
+}
+
+.dark-mode .entity-audit-bar.has-excluded {
+    background: rgba(245, 158, 11, 0.1);
+}
+
+/* Roles Bar Chart */
+.roles-chart-container {
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    margin-bottom: var(--space-4);
+    border: 1px solid var(--border-default);
+}
+
+.roles-chart-container h4 {
+    margin: 0 0 var(--space-3) 0;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.roles-bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+/* Top Roles List */
+.roles-top-list {
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    border: 1px solid var(--border-default);
+}
+
+.roles-top-list h4 {
+    margin: 0 0 var(--space-3) 0;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.top-role-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border-muted);
+}
+
+.top-role-item:last-child {
+    border-bottom: none;
+}
+
+.top-role-rank.rank-1 { background: #ffd700; color: #333; }
+.top-role-rank.rank-2 { background: #c0c0c0; color: #333; }
+.top-role-rank.rank-3 { background: #cd7f32; color: #fff; }
+
+/* Roles Filter Bar */
+.roles-filter-bar {
+    display: flex;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+    /* v3.0.58: Add padding to prevent focus outline clipping */
+    padding: 3px;
+    margin-left: -3px;
+    margin-top: -3px;
+}
+
+.roles-filter-bar input {
+    flex: 1;
+    max-width: 300px;
+}
+
+.roles-filter-bar select {
+    width: 200px;
+}
+
+/* Responsibility Matrix */
+
+.responsibility-matrix {
+    overflow-x: auto;
+}
+
+.responsibility-matrix table {
+    border-collapse: collapse;
+    min-width: 100%;
+}
+
+.responsibility-matrix th,
+.responsibility-matrix td {
+    padding: var(--space-2);
+    text-align: center;
+    border: 1px solid var(--border-default);
+    font-size: 12px;
+}
+
+.responsibility-matrix th {
+    background: var(--bg-elevated);
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.responsibility-matrix th.role-header {
+    writing-mode: vertical-lr;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    white-space: nowrap;
+    max-width: 40px;
+    height: 120px;
+}
+
+.responsibility-matrix td.role-row-header {
+    text-align: left;
+    font-weight: 500;
+    background: var(--bg-elevated);
+    white-space: nowrap;
+}
+
+.matrix-cell.has-interaction {
+    background: var(--accent-subtle);
+    cursor: pointer;
+}
+
+.matrix-cell.has-interaction:hover {
+    background: var(--accent-muted);
+}
+
+.matrix-cell.self {
+    background: var(--bg-surface);
+}
+
+/* Document Log */
+.document-log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-3);
+}
+
+.document-log-header h4 {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.document-log-table {
+    overflow-x: auto;
+}
+
+.document-log-empty {
+    text-align: center;
+    padding: var(--space-6);
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* Role Card Enhancements */
+
+.role-card.expanded .role-card-body {
+    display: block;
+}
+
+.role-card.expanded .role-card-chevron {
+    transform: rotate(180deg);
+}
+
+/* ===== ENHANCED ROLE DETAILS ===== */
+.role-aliases {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+    padding: var(--space-2);
+    background: var(--bg-surface);
+    border-radius: var(--radius-sm);
+}
+
+.confidence-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    color: white;
+    font-weight: 600;
+}
+
+/* ===== RACI MATRIX ===== */
+
+.raci-cell {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.raci-cell.raci-r { background: rgba(52, 152, 219, 0.2); color: #2980b9; }
+.raci-cell.raci-a { background: rgba(231, 76, 60, 0.2); color: #c0392b; }
+.raci-cell.raci-c { background: rgba(46, 204, 113, 0.2); color: #27ae60; }
+.raci-cell.raci-i { background: rgba(241, 196, 15, 0.2); color: #f39c12; }
+
+.raci-total {
+    font-weight: 700;
+    background: var(--bg-surface);
+}
+
+.raci-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-surface);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+}
+
+.raci-legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.raci-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+}
+
+.raci-dot.raci-r { background: rgba(52, 152, 219, 0.5); }
+.raci-dot.raci-a { background: rgba(231, 76, 60, 0.5); }
+.raci-dot.raci-c { background: rgba(46, 204, 113, 0.5); }
+.raci-dot.raci-i { background: rgba(241, 196, 15, 0.5); }
+
+/* ===== ROLE ADJUDICATION (v2.8.6) ===== */
+.adjudication-header {
+    margin-bottom: var(--space-4);
+}
+
+.adjudication-header h4 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-2) 0;
+}
+
+.adjudication-header h4 svg {
+    width: 20px;
+    height: 20px;
+    color: var(--success);
+}
+
+/* v3.0.58: Adjudication filter bar - prevent focus outline clipping */
+.adjudication-filters {
+    padding: 3px;
+    margin-left: -3px;
+    margin-top: -3px;
+}
+
+/* v3.0.72: Adjudication list fills available space */
+.adjudication-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    flex: 1;
+    min-height: 200px;
+    overflow-y: auto;
+}
+
+.adjudication-item {
+    display: flex;
+    flex-direction: column; /* F4: Column layout */
+    padding: var(--space-3);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    transition: all var(--duration-fast);
+}
+
+.adjudication-item:hover {
+    border-color: var(--accent);
+}
+
+.adjudication-item.status-confirmed {
+    border-left: 3px solid var(--success);
+    background: rgba(46, 204, 113, 0.05);
+}
+
+.adjudication-item.status-deliverable {
+    border-left: 3px solid var(--info);
+    background: rgba(52, 152, 219, 0.05);
+}
+
+.adjudication-item.status-rejected {
+    border-left: 3px solid var(--error);
+    background: rgba(231, 76, 60, 0.05);
+    opacity: 0.7;
+}
+
+/* v3.0.59: Adjudication edit mode styling */
+.adjudication-item.status-pending {
+    border-left: 3px solid var(--text-muted);
+}
+
+.adj-status-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 500;
+}
+
+.adj-status-badge.status-pending {
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+}
+
+.adj-status-badge.status-confirmed {
+    background: rgba(46, 204, 113, 0.15);
+    color: var(--success);
+}
+
+.adj-status-badge.status-deliverable {
+    background: rgba(52, 152, 219, 0.15);
+    color: var(--info);
+}
+
+.adj-status-badge.status-rejected {
+    background: rgba(231, 76, 60, 0.15);
+    color: var(--error);
+}
+
+.adj-item-edit .form-input,
+.adj-item-edit .form-select {
+    border: 1px solid var(--border-default);
+    border-radius: 4px;
+}
+
+.adj-item-edit .form-input:focus,
+.adj-item-edit .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+.adj-edit-actions {
+    align-items: center;
+}
+
+.adj-item-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column; /* F4: Stack vertically */
+    gap: var(--space-2);
+}
+
+.adj-item-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+}
+
+/* F2: Full name display with word wrap */
+.adj-item-name {
+    font-weight: 500;
+    font-size: 14px;
+    word-break: break-word;
+    flex: 1;
+}
+
+.adj-item-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.confidence-badge {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: var(--radius-full);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+}
+
+.confidence-badge.low {
+    background: rgba(231, 76, 60, 0.15);
+    color: var(--error);
+}
+
+.count-badge {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.suggested-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: var(--radius-full);
+    background: rgba(52, 152, 219, 0.15);
+    color: var(--info);
+}
+
+.suggested-badge.deliverable {
+    background: rgba(241, 196, 15, 0.15);
+    color: #f39c12;
+}
+
+.adj-item-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 12px;
+    color: var(--text-muted);
+    min-width: 100px;
+}
+
+.adj-item-status svg {
+    width: 14px;
+    height: 14px;
+}
+
+.status-confirmed .adj-item-status { color: var(--success); }
+.status-deliverable .adj-item-status { color: var(--info); }
+.status-rejected .adj-item-status { color: var(--error); }
+
+/* F4: Action buttons with labels */
+.adj-item-actions {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--border-muted);
+}
+
+.adj-item-actions .btn {
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.adj-item-actions .btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.adj-item-actions .btn .btn-label {
+    font-size: 11px;
+}
+
+/* F3: Improved context sentences display */
+.adj-item-contexts {
+    width: 100%;
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 1px dashed var(--border-default);
+}
+
+.adj-context-toggle {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.adj-context-toggle:hover {
+    color: var(--accent);
+}
+
+.adj-context-list {
+    margin-top: var(--space-2);
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.adj-context-sentence {
+    font-size: 12px;
+    color: var(--text-secondary);
+    padding: var(--space-2);
+    margin: var(--space-1) 0;
+    background: var(--bg-surface);
+    border-radius: var(--radius-sm);
+    border-left: 2px solid var(--accent);
+    font-style: italic;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.btn-info {
+    background: var(--info);
+    color: white;
+    border-color: var(--info);
+}
+
+.btn-info:hover {
+    background: #2980b9;
+}
+
+.text-info { color: var(--info); }
+.text-success { color: var(--success); }
+.text-error { color: var(--error); }
+
+/* ===== ROLES GRAPH VISUALIZATION (v2.8.0) ===== */
+.graph-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-surface);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-3);
+}
+
+.graph-control-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.graph-control-group label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.graph-control-group input[type="range"] {
+    width: 100px;
+    height: 6px;
+    -webkit-appearance: none;
+    background: var(--bg-elevated);
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.graph-control-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.graph-control-group input[type="text"] {
+    width: 150px;
+}
+
+.graph-control-group select {
+    width: auto;
+    min-width: 100px;
+}
+
+#graph-weight-value {
+    min-width: 20px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.graph-legend {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-2) var(--space-3);
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.legend-dot.role-dot {
+    background: #4A90D9;
+}
+
+.legend-dot.doc-dot {
+    background: #27AE60;
+}
+
+/* v2.9.10: Aligned node colors with JS colorScale (#8) */
+.legend-dot.deliverable-dot {
+    background: #F59E0B;  /* Amber - matches JS colorScale */
+}
+
+.legend-dot.system-dot {
+    background: #8B5CF6;  /* Purple - matches JS colorScale */
+}
+
+.legend-dot.org-dot {
+    background: #EC4899;  /* Pink - matches JS colorScale */
+}
+
+/* v2.9.10: Adjudication state legend dots (#8) */
+.legend-dot.confirmed-dot {
+    background: #10B981;  /* Emerald - confirmed role */
+    box-shadow: 0 0 0 2px #fff, 0 0 0 3px #10B981;
+}
+
+.legend-dot.rejected-dot {
+    background: #95A5A6;  /* Gray - rejected */
+}
+
+/* v3.0.72: Graph container fills available space */
+.graph-container {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    min-height: 400px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-default);
+    overflow: hidden;
+}
+
+#roles-graph-svg {
+    width: 100%;
+    height: 100% !important; /* Override HTML attribute */
+}
+
+/* v3.0.72: Make graph section a flex container */
+#roles-graph {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+.graph-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    color: var(--text-secondary);
+}
+
+.graph-loading .spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Graph Node Styles */
+.graph-node {
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.graph-node:hover {
+    opacity: 0.8;
+}
+
+.graph-node.highlighted {
+    stroke: var(--warning);
+    stroke-width: 3px;
+}
+
+.graph-node.dimmed {
+    opacity: 0.5;
+}
+
+.graph-node.selected {
+    stroke: var(--accent);
+    stroke-width: 3px;
+}
+
+.graph-node-label {
+    font-size: 11px;
+    fill: var(--text-primary);
+    pointer-events: none;
+    text-anchor: middle;
+    font-weight: 500;
+    paint-order: stroke fill;
+    stroke: var(--bg-primary);
+    stroke-width: 3px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.graph-link {
+    stroke: var(--border-default);
+    stroke-opacity: 0.6;
+    fill: none;
+}
+
+.graph-link.highlighted {
+    stroke: var(--accent);
+    stroke-opacity: 1;
+    stroke-width: 2px;
+}
+
+.graph-link.dimmed {
+    stroke-opacity: 0.3;
+}
+
+/* Fallback Table */
+.graph-fallback {
+    padding: var(--space-4);
+}
+
+.fallback-notice {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: var(--warning-bg);
+    color: var(--warning-text);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-3);
+    font-size: 13px;
+}
+
+.fallback-table-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Info Panel */
+.graph-info-panel {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    width: 280px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-default);
+    z-index: 10;
+}
+
+.info-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--border-default);
+    font-weight: 600;
+}
+
+.info-panel-body {
+    padding: var(--space-3);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.info-panel-body p {
+    margin: 0 0 var(--space-2);
+    font-size: 13px;
+}
+
+.info-panel-body strong {
+    color: var(--text-primary);
+}
+
+.connection-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    padding: 2px 0;
+}
+
+.connection-item .weight {
+    color: var(--text-muted);
+}
+
+/* v3.0.73: Enhanced Info Panel Styles */
+.graph-info-panel {
+    width: 320px;
+}
+
+.info-panel-body {
+    max-height: 450px;
+}
+
+.info-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+
+.info-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.info-stat {
+    background: var(--bg-subtle);
+    border-radius: var(--radius-md);
+    padding: 10px;
+    text-align: center;
+}
+
+.info-stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.info-stat-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+}
+
+.info-category {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    margin-bottom: 12px;
+}
+
+.info-explanation {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px;
+    background: var(--bg-subtle);
+    border-radius: var(--radius-md);
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+.info-explanation i {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--text-muted);
+}
+
+.info-section-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.info-connections-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.info-connection-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.info-conn-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-conn-label {
+    font-size: 12px;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.info-conn-weight {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    margin-left: 8px;
+}
+
+.info-conn-bar-bg {
+    height: 3px;
+    background: var(--bg-subtle);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.info-conn-bar {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.info-conn-terms {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.info-conn-more {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: center;
+    padding: 4px 0;
+}
+
+.info-legend {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.info-legend-title {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.info-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.info-legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.info-legend-line {
+    width: 20px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--text-muted) 0%, var(--text-muted) 100%);
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+/* Graph Tooltip */
+.graph-tooltip {
+    position: absolute;
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 100;
+    max-width: 250px;
+}
+
+.graph-tooltip .tooltip-title {
+    font-weight: 600;
+    margin-bottom: var(--space-1);
+}
+
+.graph-tooltip .tooltip-type {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.graph-tooltip .tooltip-stats {
+    margin-top: var(--space-1);
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+/* v2.9.3 B17: Edge tooltip connection display */
+.graph-tooltip .tooltip-connection {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) 0;
+    margin: var(--space-1) 0;
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.graph-tooltip .tooltip-role {
+    font-weight: 500;
+    color: var(--accent);
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.graph-tooltip .tooltip-arrow {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+
+/* ============================================================
+   BATCH E3: Role Graph Enhancements (v2.9.0)
+   ============================================================ */
+
+/* Link type styles with dash patterns */
+.graph-link.link-role-role {
+    stroke: var(--accent);
+    stroke-opacity: 0.8;
+}
+
+.graph-link.link-role-document {
+    stroke: var(--border-emphasis);
+}
+
+.graph-link.link-role-deliverable {
+    stroke: var(--success);
+    stroke-opacity: 0.7;
+}
+
+.graph-link.link-approval {
+    stroke: var(--warning);
+}
+
+.graph-link.link-coordination {
+    stroke: var(--info);
+}
+
+.graph-link.link-reports-to {
+    stroke: #9333ea; /* Purple for hierarchy */
+}
+
+.graph-link.link-supports {
+    stroke: var(--text-muted);
+}
+
+/* Enhanced link hover/highlight states */
+.graph-link.highlighted {
+    stroke: var(--accent) !important;
+    stroke-opacity: 1 !important;
+    stroke-width: 3px !important;
+    filter: drop-shadow(0 0 3px var(--accent));
+}
+
+/* Node glow effects */
+.graph-node.glow-enabled.selected circle {
+    filter: url(#node-glow);
+    transition: filter 0.3s ease;
+}
+
+.graph-node.glow-enabled.connected circle {
+    filter: url(#node-highlight-glow);
+}
+
+/* Smooth node transitions */
+.graph-node circle {
+    transition: r 0.3s ease, fill 0.3s ease, filter 0.3s ease;
+}
+
+.graph-node.selected circle {
+    stroke: var(--accent);
+    stroke-width: 3px;
+}
+
+.graph-node.connected circle {
+    stroke: var(--accent);
+    stroke-width: 2px;
+    stroke-opacity: 0.6;
+}
+
+/* v3.0.77: Weak connection nodes - visible but styled differently */
+.graph-node.weak-connection circle {
+    stroke-width: 2px;
+    stroke-dasharray: 3,2;
+}
+
+.graph-node.weak-connection .graph-node-label {
+    opacity: 0.7;
+    font-size: 10px;
+}
+
+/* v3.0.77: Enhanced graph legend */
+.graph-legend-enhanced {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    font-size: 12px;
+    margin-bottom: var(--space-2);
+}
+
+.graph-legend-section {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.graph-legend-section-title {
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.legend-visual-example {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.legend-node-small {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.legend-node-medium {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.legend-node-large {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.legend-line-solid {
+    width: 24px;
+    height: 3px;
+    background: #4A90D9;
+    display: inline-block;
+    border-radius: 2px;
+}
+
+.legend-line-dashed {
+    width: 24px;
+    height: 3px;
+    background: repeating-linear-gradient(
+        90deg,
+        #7c3aed 0px,
+        #7c3aed 4px,
+        transparent 4px,
+        transparent 7px
+    );
+    display: inline-block;
+}
+
+.legend-line-thin {
+    width: 24px;
+    height: 1px;
+    background: var(--text-muted);
+    display: inline-block;
+}
+
+.legend-line-thick {
+    width: 24px;
+    height: 4px;
+    background: var(--text-muted);
+    display: inline-block;
+    border-radius: 2px;
+}
+
+.legend-node-weak {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px dashed #4A90D9;
+    background: rgba(74, 144, 217, 0.3);
+    display: inline-block;
+}
+
+.legend-node-strong {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #4A90D9;
+    border: 1px solid #4A90D9;
+    display: inline-block;
+}
+
+.graph-first-time-hint {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: linear-gradient(90deg, rgba(74, 144, 217, 0.1), transparent);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-2);
+}
+
+.graph-first-time-hint i {
+    color: var(--accent);
+    width: 16px;
+    height: 16px;
+}
+
+.graph-first-time-hint .dismiss-hint {
+    margin-left: auto;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.graph-first-time-hint .dismiss-hint:hover {
+    opacity: 1;
+}
+
+/* Performance mode - simplified rendering */
+.graph-container.performance-mode .graph-link {
+    stroke-dasharray: none !important;
+    transition: none !important;
+}
+
+.graph-container.performance-mode .graph-node circle {
+    transition: none !important;
+}
+
+.graph-container.performance-mode .graph-node.selected circle,
+.graph-container.performance-mode .graph-node.connected circle {
+    filter: none !important;
+}
+
+/* Performance notice */
+.graph-performance-notice {
+    display: none;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: var(--space-2);
+}
+
+.graph-container.performance-mode .graph-performance-notice {
+    display: flex;
+}
+
+.graph-performance-notice i {
+    width: 14px;
+    height: 14px;
+    color: var(--warning);
+}
+
+/* Link legend */
+.graph-link-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    background: var(--bg-surface);
+    border-radius: var(--radius-md);
+    margin-top: var(--space-2);
+    font-size: 11px;
+}
+
+.link-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+}
+
+.link-legend-line {
+    width: 24px;
+    height: 2px;
+}
+
+.link-legend-line.solid {
+    background: var(--border-emphasis);
+}
+
+.link-legend-line.dashed {
+    background: repeating-linear-gradient(
+        90deg,
+        var(--success) 0px,
+        var(--success) 8px,
+        transparent 8px,
+        transparent 12px
+    );
+}
+
+.link-legend-line.dotted {
+    background: repeating-linear-gradient(
+        90deg,
+        var(--info) 0px,
+        var(--info) 4px,
+        transparent 4px,
+        transparent 8px
+    );
+}
+
+/* Animated pulse for selected nodes */
+@keyframes nodePulse {
+    0% {
+        stroke-opacity: 1;
+    }
+    50% {
+        stroke-opacity: 0.5;
+    }
+    100% {
+        stroke-opacity: 1;
+    }
+}
+
+.glow-enabled .graph-node.selected circle {
+    animation: nodePulse 2s ease-in-out infinite;
+}
+
+/* Dark mode adjustments for graph */
+.dark-mode .graph-link.link-role-role {
+    stroke: var(--accent-light);
+}
+
+.dark-mode .graph-link.link-role-deliverable {
+    stroke: #4ade80;
+}
+
+.dark-mode .graph-link.link-reports-to {
+    stroke: #a855f7;
+}
+
+.dark-mode .graph-link.highlighted {
+    filter: drop-shadow(0 0 4px var(--accent));
+}
+
+
+/* ============================================================
+   ROLE DICTIONARY STYLES
+   ============================================================ */
+
+.dictionary-header {
+    margin-bottom: var(--space-3);
+}
+
+.dictionary-header h4 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.dictionary-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-3);
+}
+
+.dictionary-stats {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-3);
+    padding: var(--space-2) 0;
+}
+
+.dict-stat {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.dict-stat strong {
+    color: var(--text-primary);
+    font-size: 16px;
+}
+
+.dictionary-table-container {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+#dictionary-table td {
+    vertical-align: top;
+}
+
+.inactive-row {
+    opacity: 0.6;
+    background: var(--bg-elevated);
+}
+
+/* Category badges */
+.category-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 500;
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+}
+
+/* Source badges */
+.source-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge.active { background: var(--success); color: white; }
+.status-badge.inactive { background: var(--text-muted); color: white; }
+
+/* Dictionary empty state */
+.dictionary-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-6);
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.dictionary-empty i {
+    width: 48px;
+    height: 48px;
+    margin-bottom: var(--space-3);
+}
+
+/* Import dropzone */
+.import-dropzone {
+    border: 2px dashed var(--border-default);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.import-dropzone:hover,
+.import-dropzone.drag-over,
+.import-dropzone.dragover {
+    border-color: var(--accent);
+    background: var(--bg-elevated);
+}
+
+.import-dropzone i {
+    width: 32px;
+    height: 32px;
+    color: var(--text-muted);
+}
+
+.import-format-help {
+    margin-top: var(--space-3);
+    padding: var(--space-2);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.import-format-help p {
+    margin: var(--space-1) 0;
+}
+
+/* v2.9.1 D2: Smart Import Wizard Progress Steps */
+.import-wizard-progress {
+    border-top: 1px solid var(--border-color);
+    padding-top: var(--space-3);
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+}
+
+.progress-step {
+    flex: 1;
+    text-align: center;
+    padding: 8px 4px;
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+}
+
+.progress-step.active {
+    background: var(--accent);
+    color: white;
+}
+
+.progress-step.current {
+    font-weight: 600;
+    box-shadow: 0 0 0 2px var(--accent);
+}
+
+/* Import wizard step content */
+.import-wizard-step h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 12px 0;
+}
+
+.import-wizard-step h4 i {
+    width: 20px;
+    height: 20px;
+    color: var(--accent);
+}
+
+.column-mapping-grid {
+    background: var(--bg-elevated);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+}
+
+.import-preview-summary {
+    background: var(--success-bg, #E8F5E9);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    border-left: 4px solid var(--success);
+}
+
+.import-complete-result .success-icon i {
+    color: var(--success);
+}
+
+.analysis-stats {
+    background: var(--bg-elevated);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+}
+
+/* Form styling for modals */
+.form-group {
+    margin-bottom: var(--space-3);
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: var(--space-1);
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.form-textarea {
+    width: 100%;
+    padding: var(--space-2);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.btn-danger {
+    color: var(--error);
+}
+
+.btn-danger:hover {
+    background: rgba(255, 0, 0, 0.1);
+}
+
+/* ============================================================
+   DICTIONARY SHARING STYLES
+   ============================================================ */
+
+.dictionary-sharing-info {
+    display: none;
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-3);
+    border-left: 3px solid var(--accent);
+}
+
+.sharing-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.sharing-status i {
+    width: 16px;
+    height: 16px;
+    color: var(--accent);
+}
+
+.btn-group {
+    display: flex;
+    gap: 0;
+}
+
+.btn-group .btn:first-child {
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+
+.btn-group .btn:last-child {
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.btn-group .btn:not(:last-child) {
+    border-right: 1px solid var(--border-muted);
+}
+
+.btn-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border-muted);
+    margin: 0 var(--space-2);
+}
+
+/* Source badge for master_sync */
+
+/* ============================================================
+   SHARING SETTINGS STYLES
+   ============================================================ */
+
+.sharing-settings-header h4 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-1);
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    cursor: pointer;
+    padding: var(--space-2);
+    border-radius: var(--radius-sm);
+    transition: background 0.15s;
+}
+
+.radio-label:hover {
+    background: var(--bg-elevated);
+}
+
+.radio-label input[type="radio"] {
+    width: 16px;
+    height: 16px;
+}
+
+.shared-path-group {
+    margin-top: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--accent);
+}
+
+.input-with-button {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.input-with-button .form-input {
+    flex: 1;
+}
+
+.path-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+    padding: var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+}
+
+.path-status i {
+    width: 16px;
+    height: 16px;
+}
+
+.path-status.success {
+    background: rgba(76, 175, 80, 0.1);
+    color: var(--success);
+}
+
+.path-status.error {
+    background: rgba(244, 67, 54, 0.1);
+    color: var(--error);
+}
+
+.path-status.checking {
+    background: var(--bg-elevated);
+    color: var(--text-muted);
+}
+
+.sharing-status-panel {
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+}
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-1) 0;
+    border-bottom: 1px solid var(--border-muted);
+}
+
+.status-row:last-child {
+    border-bottom: none;
+}
+
+.status-label {
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.status-value {
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.sharing-help {
+    background: var(--bg-elevated);
+}
+
+.sharing-help h5 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.sharing-help h5 i {
+    width: 14px;
+    height: 14px;
+    color: var(--accent);
+}
+
+
+/* ============================================================
+   F15: ENHANCED ROLES CARD
+   ============================================================ */
+
+.roles-card-enhanced,
+#roles-card-enhanced {
+    background: var(--bg-secondary, #16213e);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid var(--border-default, rgba(255,255,255,0.1));
+}
+
+.roles-enhanced-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-default, rgba(255,255,255,0.1));
+}
+
+.roles-enhanced-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary, #e0e0e0);
+}
+
+.roles-enhanced-header h3 i {
+    width: 18px;
+    height: 18px;
+    color: var(--accent-blue, #4dabf7);
+}
+
+/* Mini Network Graph */
+.roles-network-graph-container {
+    height: 160px;
+    background: var(--bg-tertiary, #1f2937);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    position: relative;
+}
+
+.mini-graph-svg {
+    width: 100%;
+    height: 100%;
+}
+
+.mini-graph-link {
+    stroke: rgba(255,255,255,0.15);
+    stroke-opacity: 0.6;
+}
+
+.mini-graph-node circle {
+    stroke: rgba(255,255,255,0.3);
+    stroke-width: 1.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mini-graph-node circle:hover {
+    stroke: #fff;
+    stroke-width: 2px;
+    filter: brightness(1.2);
+}
+
+.graph-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary, #a0a0a0);
+    font-size: 11px;
+}
+
+.graph-loading .spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid rgba(255,255,255,0.1);
+    border-top-color: var(--accent-blue, #4dabf7);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Stats Row */
+.roles-stats-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.stat-card {
+    flex: 1;
+    background: var(--bg-tertiary, #1f2937);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.stat-card.clickable {
+    cursor: pointer;
+}
+
+.stat-card.clickable:hover {
+    background: var(--bg-hover, rgba(255,255,255,0.08));
+    transform: translateY(-1px);
+}
+
+.stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary, #e0e0e0);
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 10px;
+    color: var(--text-secondary, #a0a0a0);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-top: 2px;
+}
+
+.stat-bar-fill.confidence {
+    background: var(--accent-green, #51cf66);
+}
+
+/* Top Roles List */
+.roles-top-list {
+    margin-bottom: 14px;
+}
+
+.roles-top-list h4 {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary, #a0a0a0);
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.top-roles-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.role-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border-radius: 4px;
+}
+
+.role-bar-row:hover {
+    background: var(--bg-hover, rgba(255,255,255,0.05));
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.role-name {
+    width: 90px;
+    font-size: 11px;
+    color: var(--text-primary, #e0e0e0);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.role-bar-container {
+    flex: 1;
+    height: 8px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.role-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+
+.role-count {
+    width: 24px;
+    text-align: right;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary, #a0a0a0);
+}
+
+/* Actions Row */
+.roles-actions-row {
+    display: flex;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-default, rgba(255,255,255,0.1));
+}
+
+.roles-actions-row .btn {
+    flex: 1;
+    justify-content: center;
+    font-size: 11px;
+}
+
+
+/* ============================================
+   v2.9.7: Roles Studio Sidebar Navigation
+   ============================================ */
+
+/* v3.0.115: Override fullscreen solid background with semi-transparent backdrop */
+#modal-roles.modal-fullscreen {
+    background: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Modal Layout - Large (3/4 screen) but not fullscreen */
+#modal-roles .modal-content {
+    width: 92vw;
+    max-width: 1800px;
+    height: 88vh;
+    max-height: none;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-lg, 12px);
+}
+
+.roles-modal-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.roles-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--border-default);
+    flex-shrink: 0;
+}
+
+.roles-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-left: var(--space-4);
+}
+
+.roles-search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-right: var(--space-2);
+}
+
+.roles-search-container svg {
+    position: absolute;
+    left: 10px;
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted);
+}
+
+.roles-search-input {
+    padding: 8px 12px 8px 36px;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    width: 200px;
+    font-size: 14px;
+}
+
+.roles-search-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+/* v3.0.98: Document filter dropdown */
+.roles-document-filter {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+/* v3.0.116: Visible label for document filter */
+.roles-document-filter-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.roles-document-filter select {
+    padding: 8px 32px 8px 12px;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: 14px;
+    cursor: pointer;
+    min-width: 180px;
+    max-width: 280px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+
+.roles-document-filter select:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.roles-document-filter select:hover {
+    border-color: var(--accent);
+}
+
+/* v3.0.98: Role context cards styling */
+.role-context-section {
+    border-top: 1px solid var(--border-default);
+    padding-top: 12px;
+}
+
+.role-context-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.role-context-card:hover {
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.context-location .action-tag {
+    background: var(--bg-tertiary);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
+.context-text {
+    font-style: italic;
+    color: var(--text-secondary);
+}
+
+.role-highlight {
+    background: rgba(74, 144, 217, 0.3);
+    padding: 1px 2px;
+    border-radius: 2px;
+    font-weight: 500;
+}
+
+/* Body with horizontal tabs layout - v3.0.71 fix */
+.roles-modal-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Horizontal Tab Navigation Bar - v3.0.71 */
+.roles-sidebar {
+    width: 100%;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--border-default);
+    overflow-x: auto;
+    padding: 0 var(--space-3);
+    background: var(--bg-surface);
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0;
+}
+
+/* Hide section titles in horizontal mode - v3.0.71 */
+.roles-nav-section {
+    display: contents;
+}
+
+.roles-nav-title {
+    display: none;
+}
+
+/* Horizontal Tab Items - v3.0.71 */
+.roles-nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: auto;
+    padding: var(--space-3) var(--space-4);
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 13px;
+    text-align: center;
+    white-space: nowrap;
+    border-radius: 0;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+}
+
+.roles-nav-item:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.roles-nav-item.active {
+    background: transparent;
+    color: var(--accent);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+}
+
+.roles-nav-item svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+/* Hide footer in horizontal mode - v3.0.71 */
+.roles-nav-footer {
+    display: none;
+}
+
+.roles-stats-mini {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: var(--space-2);
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.roles-stats-mini strong {
+    color: var(--accent);
+}
+
+/* Main Content Area - v3.0.72: Flex container for full-height content */
+.roles-main {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Allow flex shrinking */
+}
+
+/* Override old tabs - hide them */
+
+/* ============================================
+   v2.9.7: Interactive RACI Matrix
+   ============================================ */
+
+.raci-header {
+    margin-bottom: var(--space-4);
+}
+
+.raci-header h4 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-2) 0;
+    font-size: 18px;
+}
+
+.raci-header h4 svg {
+    width: 20px;
+    height: 20px;
+    color: var(--accent);
+}
+
+.raci-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-default);
+}
+
+.raci-controls-left,
+.raci-controls-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.raci-matrix-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-3);
+}
+
+.raci-matrix-info svg {
+    width: 16px;
+    height: 16px;
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+/* Interactive RACI Table */
+
+/* Interactive RACI cells */
+.raci-cell {
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+    min-width: 50px;
+}
+
+.raci-cell:hover {
+    background: var(--bg-hover);
+}
+
+.raci-cell.raci-r {
+    background: rgba(34, 197, 94, 0.15);
+    color: var(--success);
+    font-weight: 600;
+}
+
+.raci-cell.raci-a {
+    background: rgba(59, 130, 246, 0.15);
+    color: var(--info);
+    font-weight: 600;
+}
+
+.raci-cell.raci-c {
+    background: rgba(234, 179, 8, 0.15);
+    color: var(--warning);
+    font-weight: 600;
+}
+
+.raci-cell.raci-i {
+    background: rgba(148, 163, 184, 0.15);
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.raci-cell.edited {
+    box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.raci-cell.editing {
+    background: var(--bg-surface);
+    box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+/* RACI cell edit dropdown */
+.raci-edit-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    padding: 8px;
+    display: flex;
+    gap: 4px;
+}
+
+.raci-edit-btn {
+    padding: 6px 10px;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 12px;
+    transition: all 0.1s ease;
+}
+
+.raci-edit-btn.raci-btn-r {
+    background: rgba(34, 197, 94, 0.2);
+    color: var(--success);
+}
+
+.raci-edit-btn.raci-btn-a {
+    background: rgba(59, 130, 246, 0.2);
+    color: var(--info);
+}
+
+.raci-edit-btn.raci-btn-c {
+    background: rgba(234, 179, 8, 0.2);
+    color: var(--warning);
+}
+
+.raci-edit-btn.raci-btn-i {
+    background: rgba(148, 163, 184, 0.2);
+    color: var(--text-secondary);
+}
+
+.raci-edit-btn.raci-btn-clear {
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+}
+
+.raci-edit-btn:hover {
+    transform: scale(1.1);
+}
+
+.raci-total {
+    font-weight: 700;
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+}
+
+/* RACI Legend Bar */
+.raci-legend-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+    padding: var(--space-3);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-default);
+}
+
+.raci-legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.raci-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+}
+
+.raci-dot.raci-r {
+    background: var(--success);
+}
+
+.raci-dot.raci-a {
+    background: var(--info);
+}
+
+.raci-dot.raci-c {
+    background: var(--warning);
+}
+
+.raci-dot.raci-i {
+    background: var(--text-muted);
+}
+
+/* ============================================
+   v2.9.7: Bulk Adjudication
+   ============================================ */
+
+.adj-select-all-label {
+    padding: 6px 12px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+}
+
+.adj-bulk-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.bulk-divider {
+    color: var(--border-default);
+    margin: 0 var(--space-1);
+}
+
+.bulk-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.adj-selection-count {
+    padding: 6px 12px;
+    background: var(--accent-subtle);
+    color: var(--accent);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+}
+
+/* Selectable adjudication items */
+.adjudication-item {
+    position: relative;
+}
+
+/* v3.0.58: Changed from absolute to flex-compatible inline checkbox */
+.adj-item-checkbox {
+    /* Remove absolute positioning - now uses flex layout in JS */
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    cursor: pointer;
+    accent-color: var(--accent);
+}
+
+/* Legacy support for absolute positioning mode (add .selectable class) */
+.adjudication-item.selectable .adj-item-checkbox {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.adjudication-item.selectable {
+    padding-left: 44px;
+}
+
+.adjudication-item.selected {
+    background: var(--accent-subtle);
+    border-color: var(--accent);
+}
+
+/* ============================================
+   v2.9.7: Responsive adjustments
+   ============================================ */
+
+
+/* ============================================
+   v3.0.57: Condensed RACI Matrix Table
+   Role column wider, R/A/C/I columns compact
+   Sticky header, scrollable body, sticky legend
+   ============================================ */
+
+/* RACI section layout - flex column with sticky legend */
+#roles-matrix {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: 100%;
+    overflow: hidden;
+}
+
+#roles-matrix .raci-header,
+#roles-matrix .raci-toolbar,
+#roles-matrix .raci-matrix-info {
+    flex-shrink: 0;
+}
+
+/* Scrollable table container - v3.0.72: Remove max-height to fill space */
+#responsibility-matrix {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: auto;
+    min-height: 150px;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+}
+
+/* Sticky legend at bottom */
+#roles-matrix .raci-legend-bar {
+    flex-shrink: 0;
+    position: sticky;
+    bottom: 0;
+    background: var(--bg-elevated);
+    z-index: 2;
+    border-top: 1px solid var(--border-default);
+    margin-top: 0;
+}
+
+.raci-matrix-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 13px;
+}
+
+.raci-matrix-table thead th {
+    padding: 10px 6px;
+    text-align: center;
+    font-weight: 600;
+    border-top: 2px solid var(--border-default);
+    border-bottom: 2px solid var(--border-default);
+    background: var(--bg-elevated);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+/* Role column - takes remaining space, allow wrap */
+.raci-matrix-table thead th:first-child,
+.raci-matrix-table tbody td:first-child {
+    text-align: left;
+    padding-left: 12px;
+    padding-right: 8px;
+    width: auto;
+}
+
+.raci-matrix-table tbody td.role-name {
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.3;
+    max-width: 300px;
+    min-width: 120px;
+}
+
+/* R, A, C, I columns - compact */
+.raci-matrix-table thead th.raci-header {
+    width: 44px;
+    min-width: 44px;
+    max-width: 44px;
+    padding: 10px 4px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.raci-matrix-table thead th.raci-header.raci-r { color: var(--success); }
+.raci-matrix-table thead th.raci-header.raci-a { color: var(--info); }
+.raci-matrix-table thead th.raci-header.raci-c { color: var(--warning); }
+.raci-matrix-table thead th.raci-header.raci-i { color: var(--text-secondary); }
+
+.raci-matrix-table tbody .raci-cell {
+    width: 44px;
+    min-width: 44px;
+    max-width: 44px;
+    padding: 8px 4px;
+    text-align: center;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+}
+
+/* Total column - slightly wider */
+.raci-matrix-table thead th:last-child,
+.raci-matrix-table tbody td.raci-total {
+    width: 52px;
+    min-width: 52px;
+    max-width: 52px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.raci-matrix-table tbody tr {
+    border-bottom: 1px solid var(--border-default);
+}
+
+.raci-matrix-table tbody tr:hover {
+    background: var(--bg-hover);
+}
+
+.raci-matrix-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* Override old raci-cell min-width */
+.raci-matrix-table .raci-cell {
+    min-width: 44px !important;
+}
+
+/* ============================================
+   v3.0.97: Role-Document Matrix Styles
+   ============================================ */
+
+.roledoc-header {
+    margin-bottom: var(--space-4);
+}
+
+.roledoc-header h4 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-2) 0;
+    font-size: var(--font-size-lg);
+}
+
+.roledoc-header h4 svg {
+    width: 20px;
+    height: 20px;
+    color: var(--accent);
+}
+
+.roledoc-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-4);
+    padding: var(--space-3);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    flex-wrap: wrap;
+    gap: var(--space-3);
+}
+
+.roledoc-controls-left,
+.roledoc-controls-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.roledoc-matrix-info {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: var(--info-bg);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-4);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.roledoc-matrix-info svg {
+    width: 16px;
+    height: 16px;
+    color: var(--info);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.roledoc-table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+}
+
+.roledoc-matrix-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+}
+
+.roledoc-matrix-table thead th {
+    background: var(--bg-tertiary);
+    padding: var(--space-2) var(--space-3);
+    text-align: center;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-default);
+    white-space: nowrap;
+}
+
+.roledoc-matrix-table thead th.roledoc-role-header {
+    text-align: left;
+    min-width: 180px;
+    position: sticky;
+    left: 0;
+    background: var(--bg-tertiary);
+    z-index: 1;
+}
+
+.roledoc-matrix-table thead th.roledoc-doc-header {
+    min-width: 80px;
+    max-width: 120px;
+    font-size: var(--font-size-xs);
+}
+
+.roledoc-matrix-table thead th.roledoc-total-header {
+    min-width: 60px;
+    background: var(--bg-secondary);
+}
+
+.roledoc-matrix-table tbody td {
+    padding: var(--space-2) var(--space-3);
+    text-align: center;
+    border-bottom: 1px solid var(--border-muted);
+}
+
+.roledoc-matrix-table tbody td.roledoc-role-name {
+    text-align: left;
+    font-weight: 500;
+    position: sticky;
+    left: 0;
+    background: var(--bg-primary);
+    z-index: 1;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.roledoc-matrix-table tbody tr:hover td {
+    background: var(--bg-secondary);
+}
+
+.roledoc-matrix-table tbody tr:hover td.roledoc-role-name {
+    background: var(--bg-secondary);
+}
+
+.roledoc-cell.roledoc-present {
+    color: var(--success);
+    font-weight: 600;
+}
+
+.roledoc-cell.roledoc-absent {
+    color: var(--text-muted);
+}
+
+.roledoc-total {
+    font-weight: 600;
+    background: var(--bg-secondary) !important;
+    color: var(--accent);
+}
+
+.roledoc-summary {
+    display: flex;
+    gap: var(--space-4);
+    padding: var(--space-3);
+    margin-top: var(--space-4);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+}
+
+.roledoc-summary span strong {
+    color: var(--accent);
+}
+
+.roledoc-empty {
+    text-align: center;
+    padding: var(--space-6);
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* Dark mode adjustments */
+.dark-mode .roledoc-matrix-table thead th.roledoc-role-header,
+.dark-mode .roledoc-matrix-table tbody td.roledoc-role-name {
+    background: var(--bg-primary);
+}
+
+.dark-mode .roledoc-matrix-table tbody tr:hover td.roledoc-role-name {
+    background: var(--bg-secondary);
+}
+
+
+/* ============================================================
+   DOCUMENT PROFILES SETTINGS (v3.0.110)
+   Customizable presets for document types
+   ============================================================ */
+
+.profiles-header {
+    margin-bottom: var(--space-4);
+}
+
+.profiles-header h4 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-1);
+}
+
+.profiles-header h4 i {
+    width: 18px;
+    height: 18px;
+    color: var(--accent);
+}
+
+.profile-selector-settings {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.profile-btn-settings {
+    padding: var(--space-2) var(--space-4);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--duration-fast);
+}
+
+.profile-btn-settings:hover {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border-color: var(--border-emphasis);
+}
+
+.profile-btn-settings.active {
+    background: var(--accent-subtle);
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.profile-description {
+    padding: var(--space-3);
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-4);
+    border-left: 3px solid var(--accent);
+}
+
+.profile-description strong {
+    color: var(--text-primary);
+}
+
+.checker-grid-container {
+    background: var(--bg-elevated);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+    border: 1px solid var(--border-default);
+}
+
+.checker-grid-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-3);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--border-muted);
+}
+
+.checker-grid-header > span {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.checker-grid-actions {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.checker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-4);
+}
+
+.checker-grid .checker-category {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.checker-grid .checker-category-header {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding-bottom: var(--space-1);
+    border-bottom: 1px solid var(--border-muted);
+    margin-bottom: var(--space-1);
+}
+
+.checker-option {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) 0;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color var(--duration-fast);
+}
+
+.checker-option:hover {
+    color: var(--text-primary);
+}
+
+.checker-option input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+.checker-option input[type="checkbox"]:checked + span,
+.checker-option:has(input:checked) {
+    color: var(--text-primary);
+}
+
+.profile-save-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: rgba(76, 175, 80, 0.1);
+    border-radius: var(--radius-md);
+    margin-top: var(--space-3);
+    color: var(--success);
+    font-size: var(--font-size-sm);
+}
+
+.profile-save-status i {
+    width: 16px;
+    height: 16px;
+}
+
+/* Dark mode adjustments for profiles */
+.dark-mode .checker-grid-container,
+[data-theme="dark"] .checker-grid-container {
+    background: var(--bg-surface);
+}
+
+.dark-mode .profile-btn-settings,
+[data-theme="dark"] .profile-btn-settings {
+    background: var(--bg-surface);
+}
+
+.dark-mode .profile-description,
+[data-theme="dark"] .profile-description {
+    background: var(--bg-surface);
+}
+
