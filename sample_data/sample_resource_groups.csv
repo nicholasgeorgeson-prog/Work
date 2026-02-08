@@ -1,0 +1,39 @@
+Resource Group,Role Title,Hours,Skill Area,Additional Info,ID,Assignment Status
+Model Build & Support,Model Machinist,0,Engineering; Test & Evaluation (T&E); Specialty Test; Aerosciences Test,Precision machining expertise required,5449,Assignable
+Model Build & Support,Model Technician,0,Engineering; Test & Evaluation (T&E); Specialty Test; Aerosciences Test,General model support,5432,Assignable
+Model Build & Support,Model Technician Lead,0,Engineering; Test & Evaluation (T&E); Specialty Test; Aerosciences Test,Team leadership role,5458,Assignable
+Model Design & Analysis,Aerosciences Design & Analysis Manager,0,Engineering; Test & Evaluation (T&E); Specialty Test; Aerosciences Test,Department management,5465,Not to be Assigned; Reason: Infrastructure
+Model Design & Analysis,Model Design Lead,0,Engineering; Test & Evaluation (T&E); Specialty Test; Aerosciences Test,Design team leadership,5245,Assignable
+Model Design & Analysis,Model Designer,0,Engineering; Test & Evaluation (T&E); Specialty Test; Aerosciences Test,CAD and design work,5246,Assignable
+Product Support (PS),Repair Manager,0,Engineering,Manages repair operations,3499,Assignable
+Product Support (PS),Repair Specialist,0,Engineering,Technical repair expertise,3500,Assignable
+Product Support (PS),Repair of Repairables Warehouse Attendant,0,Engineering,Warehouse operations,3406,Assignable
+Product Support (PS),Support Equipment Engineer,0,Engineering,Equipment support design,381,Assignable
+Product Support (PS),Support Hardware Lead,0,Engineering,Hardware support leadership,3845,Assignable
+Product Support (PS),Supportable Low Observables Engineer,0,Engineering,LO technology support,5645,Assignable
+Avionics Integration (AvI),Control Station Design Engineer,0,Engineering,Control station design,2244,Assignable
+Avionics Integration (AvI),Control Station Development Operations Engineer,0,Engineering,DevOps for control stations,2245,Assignable
+Avionics Integration (AvI),Control Station Production Lead,0,Engineering,Production leadership,2251,Assignable
+Avionics Integration (AvI),Control Station Production Liaison,0,Engineering,Production coordination,2250,Assignable
+Avionics Integration (AvI),Control Station Production Technician,0,Engineering,Production technician,2252,Assignable
+Avionics Integration (AvI),Control Station Responsible Engineer,0,Engineering,System responsibility,2243,Assignable
+Avionics Integration (AvI),Electro-optical / Infrared Responsible Engineer,0,Engineering,EO/IR systems,5692,Assignable
+Avionics Integration (AvI),Electronic Warfare Responsible Engineer,0,Engineering,EW systems,5691,Assignable
+Structural Full-scale Test,Structural Full-scale Test Lead,0,Engineering; Test & Evaluation (T&E); Specialty Test,Test leadership,4540,Assignable
+Structural Full-scale Test,Structural Full-scale Test Lead Instrumentation Technician,0,Engineering; Test & Evaluation (T&E); Specialty Test,Instrumentation support,4538,Assignable
+Structural Full-scale Test,Structural Full-scale Test Lead Mechanical Technician,0,Engineering; Test & Evaluation (T&E); Specialty Test,Mechanical support,4557,Assignable
+Structural Full-scale Test,Structural Full-scale Test Load Control System Engineer,0,Engineering; Test & Evaluation (T&E); Specialty Test,Load control systems,4542,Assignable
+Structural Full-scale Test,Structural Full-scale Test Loads Control & Instrumentation Engineering Lead,0,Engineering; Test & Evaluation (T&E); Specialty Test,Combined leadership role,4564,Assignable
+MBT&E,Digital Functional Capability Assessment Team,0,Engineering; Test & Evaluation (T&E),Assessment team,5874,Assignable
+MBT&E,Digital Functional Capability Assessor,0,Engineering; Test & Evaluation (T&E),Individual assessor,5875,Assignable
+MBT&E,Digital Functional Capability Overall Lead,0,Engineering; Test & Evaluation (T&E),Program leadership,5876,Assignable
+MBT&E,Digital Functional Capability Project Coordinator,0,Engineering; Test & Evaluation (T&E),Project coordination,5877,Assignable
+MBT&E,Model-based Test & Evaluation Digital Twin Modeler,0,Engineering; Test & Evaluation (T&E),Digital twin creation,4870,Assignable
+MBT&E,Model-based Test & Evaluation Engineer,0,Engineering; Test & Evaluation (T&E),MBT&E engineering,3802,Assignable
+Mass Properties,Mass Properties Control Board,0,Engineering; Flight Sciences (FS),Control board member,3344,Assignable
+Mass Properties,Mass Properties Control Board Chair,0,Engineering; Flight Sciences (FS),Board leadership,3343,Assignable
+Mass Properties,Mass Properties Database Manager,0,Engineering; Flight Sciences (FS),Database management,2903,Assignable
+Mass Properties,Mass Properties Engineer,0,Engineering; Flight Sciences (FS),Mass properties analysis,79,Assignable
+Mass Properties,Mass Properties Lead,0,Engineering; Flight Sciences (FS),Team leadership,2382,Assignable
+Mass Properties,Mass Properties Tools Portfolio Manager,0,Engineering; Flight Sciences (FS),Tools management,3940,Not to be Assigned; Reason: FHR
+Mass Properties,Weight Reduction Team,0,Engineering; Flight Sciences (FS),Weight optimization,3665,Assignable

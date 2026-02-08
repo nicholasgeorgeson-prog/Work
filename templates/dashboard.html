@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Import Metrics Dashboard</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --darker: #0f172a;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --border: #334155;
+            --card-bg: #1e293b;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --gradient-5: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+        /* Header */
+        header {
+            background: var(--dark);
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo { display: flex; align-items: center; gap: 12px; }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .logo h1 {
+            font-size: 22px;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            gap: 5px;
+            background: var(--darker);
+            padding: 4px;
+            border-radius: 10px;
+        }
+
+        .tab-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            color: var(--gray);
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover { color: var(--light); }
+
+        .tab-btn.active {
+            background: var(--gradient-1);
+            color: white;
+        }
+
+        .header-actions { display: flex; gap: 10px; }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--light);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover { background: var(--border); }
+
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+        /* Tab Content */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .stat-card:nth-child(1)::before { background: var(--gradient-1); }
+        .stat-card:nth-child(2)::before { background: var(--gradient-2); }
+        .stat-card:nth-child(3)::before { background: var(--gradient-3); }
+        .stat-card:nth-child(4)::before { background: var(--gradient-4); }
+        .stat-card:nth-child(5)::before { background: var(--gradient-5); }
+        .stat-card:nth-child(6)::before { background: var(--gradient-1); }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 12px;
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .stat-value { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+        .stat-label { color: var(--gray); font-size: 13px; }
+
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .chart-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .chart-card.full-width { grid-column: 1 / -1; }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .chart-title { font-size: 16px; font-weight: 600; }
+        .chart-container { height: 280px; position: relative; }
+        .chart-container.tall { height: 350px; }
+
+        /* Upload Area */
+        .upload-section { margin-bottom: 24px; }
+
+        .upload-area {
+            background: var(--card-bg);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .upload-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 16px;
+            background: var(--gradient-1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .upload-text h3 { font-size: 18px; margin-bottom: 6px; }
+        .upload-text p { color: var(--gray); font-size: 14px; }
+        .upload-input { display: none; }
+
+        /* Progress Bar */
+        .progress-container { display: none; margin-top: 16px; }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-1);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text { margin-top: 8px; font-size: 13px; color: var(--gray); }
+
+        /* Tables */
+        .table-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .table-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .table-title { font-size: 16px; font-weight: 600; }
+
+        .search-box { display: flex; gap: 8px; }
+
+        .search-input {
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--darker);
+            color: var(--light);
+            font-size: 13px;
+            width: 220px;
+        }
+
+        .search-input:focus { outline: none; border-color: var(--primary); }
+
+        .table-wrapper { overflow-x: auto; }
+
+        table { width: 100%; border-collapse: collapse; }
+
+        th, td { padding: 12px 16px; text-align: left; }
+
+        th {
+            background: var(--darker);
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray);
+        }
+
+        tr { border-bottom: 1px solid var(--border); }
+        tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+        .status-badge {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-success { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .status-failed { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .status-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .status-info { background: rgba(99, 102, 241, 0.2); color: var(--primary); }
+
+        .file-type-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .file-type-csv { background: rgba(79, 172, 254, 0.2); color: #4facfe; }
+        .file-type-json { background: rgba(245, 87, 108, 0.2); color: #f5576c; }
+        .file-type-xlsx, .file-type-xls { background: rgba(67, 233, 123, 0.2); color: #43e97b; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: var(--card-bg);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow: auto;
+            border: 1px solid var(--border);
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: var(--card-bg);
+            z-index: 10;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--gray);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body { padding: 20px; }
+
+        /* Analysis Section */
+        .analysis-section {
+            background: var(--darker);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .analysis-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+        }
+
+        .analysis-item {
+            text-align: center;
+            padding: 12px;
+            background: var(--card-bg);
+            border-radius: 8px;
+        }
+
+        .analysis-item .value { font-size: 20px; font-weight: 700; color: var(--light); }
+        .analysis-item .label { font-size: 11px; color: var(--gray); margin-top: 4px; }
+
+        /* Toast */
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 2000; }
+
+        .toast {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+            min-width: 280px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast-success { border-left: 4px solid var(--success); }
+        .toast-error { border-left: 4px solid var(--danger); }
+        .toast-info { border-left: 4px solid var(--primary); }
+
+        /* SVG Chart Styles */
+        .chart-svg { width: 100%; height: 100%; }
+        .chart-bar { transition: all 0.3s ease; }
+        .chart-bar:hover { filter: brightness(1.2); }
+        .chart-line { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+        .chart-area { opacity: 0.3; }
+        .chart-dot { transition: all 0.3s ease; }
+        .chart-dot:hover { r: 8; }
+        .pie-slice { transition: all 0.3s ease; cursor: pointer; }
+        .pie-slice:hover { filter: brightness(1.1); }
+        .chart-label { font-size: 10px; fill: var(--gray); }
+        .chart-value { font-size: 11px; font-weight: 600; fill: var(--light); }
+
+        .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+        .legend-color { width: 10px; height: 10px; border-radius: 2px; }
+
+        /* Gauge */
+        .gauge-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
+        .gauge-value { font-size: 36px; font-weight: 700; margin-top: -30px; }
+        .gauge-label { color: var(--gray); font-size: 13px; }
+
+        /* Horizontal Bar Chart */
+        .h-bar-chart { padding: 10px 0; }
+        .h-bar-item { margin-bottom: 12px; }
+        .h-bar-label { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px; }
+        .h-bar-label span:first-child { color: var(--light); }
+        .h-bar-label span:last-child { color: var(--gray); }
+        .h-bar-track { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+        .h-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--gray); }
+        .empty-state-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .charts-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .table-header { flex-direction: column; }
+            .search-box { width: 100%; }
+            .search-input { flex: 1; }
+            .tab-nav { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <div class="logo-icon">📊</div>
+                <h1>Import Metrics Dashboard</h1>
+            </div>
+            <nav class="tab-nav">
+                <button class="tab-btn active" onclick="showTab('general')">General</button>
+                <button class="tab-btn" onclick="showTab('diagrams')">Diagrams</button>
+                <button class="tab-btn" onclick="showTab('resources')">Resources</button>
+            </nav>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="refreshAll()">Refresh</button>
+                <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">Import File</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Upload Section -->
+        <section class="upload-section">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">
+                    <h3>Drop files here or click to upload</h3>
+                    <p>Supports CSV, JSON, and Excel files (max 50MB) - Auto-detects Diagrams and Resource Groups</p>
+                </div>
+                <input type="file" id="fileInput" class="upload-input" accept=".csv,.json,.xlsx,.xls" multiple>
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                    <div class="progress-text" id="progressText">Uploading...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- General Tab -->
+        <div id="tab-general" class="tab-content active">
+            <section class="stats-grid" id="generalStats">
+                <div class="stat-card">
+                    <div class="stat-icon">📥</div>
+                    <div class="stat-value" id="totalImports">0</div>
+                    <div class="stat-label">Total Imports</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📋</div>
+                    <div class="stat-value" id="totalRows">0</div>
+                    <div class="stat-label">Total Rows</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💾</div>
+                    <div class="stat-value" id="totalSize">0 B</div>
+                    <div class="stat-label">Total Size</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-value" id="successRate">0%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+            </section>
+
+            <section class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header"><div class="chart-title">Import Trends (30 Days)</div></div>
+                    <div class="chart-container" id="trendsChart"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header"><div class="chart-title">File Type Distribution</div></div>
+                    <div class="chart-container" id="fileTypeChart"></div>
+                </div>
+            </section>
+
+            <section class="table-section">
+                <div class="table-header">
+                    <div class="table-title">Recent Imports</div>
+                    <div class="search-box">
+                        <input type="text" class="search-input" id="searchInput" placeholder="Search files...">
+                        <button class="btn btn-secondary btn-sm" onclick="searchImports()">Search</button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Filename</th>
+                                <th>Type</th>
+                                <th>Size</th>
+                                <th>Rows</th>
+                                <th>Dataset</th>
+                                <th>Status</th>
+                                <th>Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="importsTable">
+                            <tr><td colspan="8" class="empty-state"><div class="empty-state-icon">📭</div><p>No imports yet</p></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- Diagrams Tab -->
+        <div id="tab-diagrams" class="tab-content">
+            <section class="stats-grid" id="diagramStats">
+                <div class="stat-card">
+                    <div class="stat-icon">📐</div>
+                    <div class="stat-value" id="diagramCount">0</div>
+                    <div class="stat-label">Total Diagrams</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👤</div>
+                    <div class="stat-value" id="ownerCount">0</div>
+                    <div class="stat-label">Unique Owners</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-value" id="avgCompletion">0%</div>
+                    <div class="stat-label">Avg Completion</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-value" id="fullyComplete">0</div>
+                    <div class="stat-label">Fully Complete</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔗</div>
+                    <div class="stat-value" id="withDrillDown">0</div>
+                    <div class="stat-label">With Drill Down</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📝</div>
+                    <div class="stat-value" id="totalChanges">0</div>
+                    <div class="stat-label">Total Changes</div>
+                </div>
+            </section>
+
+            <section class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header"><div class="chart-title">Status Distribution</div></div>
+                    <div class="chart-container" id="diagramStatusChart"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header"><div class="chart-title">Diagram Types</div></div>
+                    <div class="chart-container" id="diagramTypeChart"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header"><div class="chart-title">Authorization Status</div></div>
+                    <div class="chart-container" id="authorizationChart"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header"><div class="chart-title">Completion by Type</div></div>
+                    <div class="chart-container" id="completionByTypeChart"></div>
+                </div>
+                <div class="chart-card full-width">
+                    <div class="chart-header"><div class="chart-title">Owner Workload</div></div>
+                    <div class="chart-container tall" id="ownerWorkloadChart"></div>
+                </div>
+            </section>
+
+            <section class="table-section">
+                <div class="table-header">
+                    <div class="table-title">Most Changed Diagrams</div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Map Name</th>
+                                <th>Title</th>
+                                <th>Owner</th>
+                                <th>Changes</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="changeActivityTable">
+                            <tr><td colspan="5" class="empty-state">No diagram data loaded</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- Resources Tab -->
+        <div id="tab-resources" class="tab-content">
+            <section class="stats-grid" id="resourceStats">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-value" id="totalRoles">0</div>
+                    <div class="stat-label">Total Roles</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🏢</div>
+                    <div class="stat-value" id="uniqueGroups">0</div>
+                    <div class="stat-label">Resource Groups</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-value" id="assignableCount">0</div>
+                    <div class="stat-label">Assignable</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-value" id="notAssignableCount">0</div>
+                    <div class="stat-label">Not Assignable</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-value" id="assignableRate">0%</div>
+                    <div class="stat-label">Assignable Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-value" id="uniqueSkills">0</div>
+                    <div class="stat-label">Skill Areas</div>
+                </div>
+            </section>
+
+            <section class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header"><div class="chart-title">Roles by Resource Group</div></div>
+                    <div class="chart-container" id="groupDistChart"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header"><div class="chart-title">Assignment Status</div></div>
+                    <div class="chart-container" id="assignmentStatusChart"></div>
+                </div>
+                <div class="chart-card full-width">
+                    <div class="chart-header"><div class="chart-title">Skill Area Coverage</div></div>
+                    <div class="chart-container tall" id="skillAreaChart"></div>
+                </div>
+            </section>
+
+            <section class="table-section">
+                <div class="table-header">
+                    <div class="table-title">Resource Group Details</div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Resource Group</th>
+                                <th>Role Count</th>
+                                <th>Total Hours</th>
+                                <th>Assignable</th>
+                            </tr>
+                        </thead>
+                        <tbody id="groupDetailsTable">
+                            <tr><td colspan="4" class="empty-state">No resource data loaded</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Analysis Modal -->
+    <div class="modal-overlay" id="analysisModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Dataset Analysis</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ===== CONFIGURATION =====
+        const COLORS = {
+            primary: '#6366f1',
+            secondary: '#ec4899',
+            success: '#10b981',
+            warning: '#f59e0b',
+            danger: '#ef4444',
+            info: '#4facfe',
+            palette: ['#6366f1', '#ec4899', '#4facfe', '#43e97b', '#f59e0b', '#ef4444', '#764ba2', '#38f9d7', '#fa709a', '#fee140']
+        };
+
+        // Global state
+        let currentDiagramAnalysis = null;
+        let currentResourceAnalysis = null;
+
+        // ===== CHART CLASSES =====
+        class Chart {
+            constructor(container, options = {}) {
+                this.container = typeof container === 'string' ? document.getElementById(container) : container;
+                this.options = options;
+                this.width = this.container.clientWidth || 400;
+                this.height = this.container.clientHeight || 280;
+                this.padding = options.padding || { top: 20, right: 20, bottom: 40, left: 50 };
+            }
+            clear() { this.container.innerHTML = ''; }
+            createSVG() {
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('viewBox', `0 0 ${this.width} ${this.height}`);
+                svg.setAttribute('class', 'chart-svg');
+                return svg;
+            }
+        }
+
+        class BarChart extends Chart {
+            render(data, options = {}) {
+                this.clear();
+                if (!data || data.length === 0) {
+                    this.container.innerHTML = '<div class="empty-state">No data</div>';
+                    return;
+                }
+                const svg = this.createSVG();
+                const chartWidth = this.width - this.padding.left - this.padding.right;
+                const chartHeight = this.height - this.padding.top - this.padding.bottom;
+                const maxValue = Math.max(...data.map(d => d.value)) || 1;
+                const barWidth = (chartWidth / data.length) * 0.7;
+                const barGap = (chartWidth / data.length) * 0.3;
+
+                data.forEach((d, i) => {
+                    const x = this.padding.left + (i * (barWidth + barGap)) + barGap / 2;
+                    const barHeight = (d.value / maxValue) * chartHeight;
+                    const y = this.padding.top + chartHeight - barHeight;
+
+                    const bar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                    bar.setAttribute('x', x);
+                    bar.setAttribute('y', y);
+                    bar.setAttribute('width', barWidth);
+                    bar.setAttribute('height', barHeight);
+                    bar.setAttribute('rx', 4);
+                    bar.setAttribute('fill', COLORS.palette[i % COLORS.palette.length]);
+                    bar.setAttribute('class', 'chart-bar');
+                    svg.appendChild(bar);
+
+                    const valueLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    valueLabel.setAttribute('x', x + barWidth / 2);
+                    valueLabel.setAttribute('y', y - 6);
+                    valueLabel.setAttribute('text-anchor', 'middle');
+                    valueLabel.setAttribute('class', 'chart-value');
+                    valueLabel.textContent = formatNumber(d.value);
+                    svg.appendChild(valueLabel);
+
+                    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    label.setAttribute('x', x + barWidth / 2);
+                    label.setAttribute('y', this.height - 8);
+                    label.setAttribute('text-anchor', 'middle');
+                    label.setAttribute('class', 'chart-label');
+                    label.textContent = truncate(d.label, 12);
+                    svg.appendChild(label);
+                });
+                this.container.appendChild(svg);
+            }
+        }
+
+        class PieChart extends Chart {
+            render(data, options = {}) {
+                this.clear();
+                if (!data || data.length === 0) {
+                    this.container.innerHTML = '<div class="empty-state">No data</div>';
+                    return;
+                }
+                const svg = this.createSVG();
+                const centerX = this.width / 2;
+                const centerY = (this.height - 50) / 2 + 10;
+                const radius = Math.min(centerX, centerY) - 20;
+                const total = data.reduce((sum, d) => sum + d.value, 0) || 1;
+                let currentAngle = -Math.PI / 2;
+
+                data.forEach((d, i) => {
+                    const sliceAngle = (d.value / total) * Math.PI * 2;
+                    const endAngle = currentAngle + sliceAngle;
+                    const x1 = centerX + radius * Math.cos(currentAngle);
+                    const y1 = centerY + radius * Math.sin(currentAngle);
+                    const x2 = centerX + radius * Math.cos(endAngle);
+                    const y2 = centerY + radius * Math.sin(endAngle);
+                    const largeArc = sliceAngle > Math.PI ? 1 : 0;
+
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    path.setAttribute('d', `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2} Z`);
+                    path.setAttribute('fill', COLORS.palette[i % COLORS.palette.length]);
+                    path.setAttribute('class', 'pie-slice');
+                    svg.appendChild(path);
+                    currentAngle = endAngle;
+                });
+
+                const innerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                innerCircle.setAttribute('cx', centerX);
+                innerCircle.setAttribute('cy', centerY);
+                innerCircle.setAttribute('r', radius * 0.5);
+                innerCircle.setAttribute('fill', '#1e293b');
+                svg.appendChild(innerCircle);
+
+                const totalText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                totalText.setAttribute('x', centerX);
+                totalText.setAttribute('y', centerY + 5);
+                totalText.setAttribute('text-anchor', 'middle');
+                totalText.setAttribute('class', 'chart-value');
+                totalText.setAttribute('font-size', '20');
+                totalText.textContent = formatNumber(total);
+                svg.appendChild(totalText);
+
+                this.container.appendChild(svg);
+
+                const legend = document.createElement('div');
+                legend.className = 'legend';
+                data.slice(0, 6).forEach((d, i) => {
+                    const item = document.createElement('div');
+                    item.className = 'legend-item';
+                    item.innerHTML = `<div class="legend-color" style="background: ${COLORS.palette[i % COLORS.palette.length]}"></div><span>${truncate(d.label, 15)}: ${formatNumber(d.value)}</span>`;
+                    legend.appendChild(item);
+                });
+                this.container.appendChild(legend);
+            }
+        }
+
+        class LineChart extends Chart {
+            render(data, options = {}) {
+                this.clear();
+                if (!data || data.length === 0) {
+                    this.container.innerHTML = '<div class="empty-state">No data</div>';
+                    return;
+                }
+                const svg = this.createSVG();
+                const chartWidth = this.width - this.padding.left - this.padding.right;
+                const chartHeight = this.height - this.padding.top - this.padding.bottom;
+                const maxValue = Math.max(...data.map(d => d.value)) || 1;
+                const xStep = chartWidth / (data.length - 1 || 1);
+
+                let linePath = '';
+                data.forEach((d, i) => {
+                    const x = this.padding.left + (i * xStep);
+                    const y = this.padding.top + chartHeight - (d.value / maxValue * chartHeight);
+                    linePath += (i === 0 ? 'M' : 'L') + ` ${x} ${y}`;
+
+                    const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    dot.setAttribute('cx', x);
+                    dot.setAttribute('cy', y);
+                    dot.setAttribute('r', 4);
+                    dot.setAttribute('fill', COLORS.primary);
+                    dot.setAttribute('class', 'chart-dot');
+                    svg.appendChild(dot);
+
+                    if (i % Math.max(1, Math.floor(data.length / 6)) === 0) {
+                        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        label.setAttribute('x', x);
+                        label.setAttribute('y', this.height - 8);
+                        label.setAttribute('text-anchor', 'middle');
+                        label.setAttribute('class', 'chart-label');
+                        label.textContent = d.label || '';
+                        svg.appendChild(label);
+                    }
+                });
+
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                line.setAttribute('d', linePath);
+                line.setAttribute('stroke', COLORS.primary);
+                line.setAttribute('class', 'chart-line');
+                svg.insertBefore(line, svg.firstChild);
+                this.container.appendChild(svg);
+            }
+        }
+
+        class HorizontalBarChart extends Chart {
+            render(data, options = {}) {
+                this.clear();
+                if (!data || data.length === 0) {
+                    this.container.innerHTML = '<div class="empty-state">No data</div>';
+                    return;
+                }
+                const maxValue = Math.max(...data.map(d => d.value)) || 1;
+                const container = document.createElement('div');
+                container.className = 'h-bar-chart';
+
+                data.slice(0, 8).forEach((d, i) => {
+                    const item = document.createElement('div');
+                    item.className = 'h-bar-item';
+                    const pct = (d.value / maxValue * 100).toFixed(0);
+                    item.innerHTML = `
+                        <div class="h-bar-label"><span>${truncate(d.label, 30)}</span><span>${formatNumber(d.value)}</span></div>
+                        <div class="h-bar-track"><div class="h-bar-fill" style="width: ${pct}%; background: ${COLORS.palette[i % COLORS.palette.length]}"></div></div>
+                    `;
+                    container.appendChild(item);
+                });
+                this.container.appendChild(container);
+            }
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+        function formatNumber(num) {
+            if (num === null || num === undefined) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+
+        function formatBytes(bytes) {
+            if (!bytes) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+        }
+
+        function truncate(str, len) {
+            return str && str.length > len ? str.substring(0, len) + '...' : str || '';
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `<span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // ===== TAB NAVIGATION =====
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // ===== API FUNCTIONS =====
+        async function fetchMetrics() {
+            try {
+                const response = await fetch('/api/metrics');
+                return await response.json();
+            } catch (error) {
+                console.error('Error:', error);
+                return null;
+            }
+        }
+
+        async function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            const response = await fetch('/api/upload', { method: 'POST', body: formData });
+            return await response.json();
+        }
+
+        async function analyzeImport(importId) {
+            const response = await fetch(`/api/imports/${importId}/analyze`);
+            return await response.json();
+        }
+
+        async function deleteImport(importId) {
+            const response = await fetch(`/api/imports/${importId}`, { method: 'DELETE' });
+            return await response.json();
+        }
+
+        // ===== UPDATE FUNCTIONS =====
+        function updateGeneralStats(metrics) {
+            const overall = metrics.overall || {};
+            document.getElementById('totalImports').textContent = formatNumber(overall.total_imports || 0);
+            document.getElementById('totalRows').textContent = formatNumber(overall.total_rows || 0);
+            document.getElementById('totalSize').textContent = formatBytes(overall.total_size || 0);
+            const rate = overall.total_imports > 0 ? ((overall.successful_imports || 0) / overall.total_imports * 100) : 0;
+            document.getElementById('successRate').textContent = rate.toFixed(0) + '%';
+        }
+
+        function updateGeneralCharts(metrics) {
+            const trendsData = (metrics.daily_trends || []).reverse().map(d => ({
+                label: d.date ? d.date.substring(5) : '',
+                value: d.total_imports || 0
+            }));
+            new LineChart('trendsChart').render(trendsData);
+
+            const fileTypeData = (metrics.file_types || []).map(d => ({
+                label: (d.file_type || 'unknown').toUpperCase(),
+                value: d.count || 0
+            }));
+            new PieChart('fileTypeChart').render(fileTypeData);
+        }
+
+        function updateImportsTable(imports) {
+            const tbody = document.getElementById('importsTable');
+            if (!imports || imports.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><div class="empty-state-icon">📭</div><p>No imports yet</p></td></tr>';
+                return;
+            }
+            tbody.innerHTML = imports.map(imp => `
+                <tr>
+                    <td><strong>${imp.filename}</strong></td>
+                    <td><span class="file-type-badge file-type-${imp.file_type}">${imp.file_type}</span></td>
+                    <td>${formatBytes(imp.file_size)}</td>
+                    <td>${formatNumber(imp.row_count)}</td>
+                    <td><span class="status-badge status-info">Auto-detect</span></td>
+                    <td><span class="status-badge status-${imp.status}">${imp.status}</span></td>
+                    <td>${formatDate(imp.import_timestamp)}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="showAnalysis(${imp.id})">Analyze</button>
+                        <button class="btn btn-secondary btn-sm" onclick="confirmDelete(${imp.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateDiagramStats(analysis) {
+            if (!analysis || !analysis.overview) return;
+            const o = analysis.overview;
+            document.getElementById('diagramCount').textContent = formatNumber(o.total_diagrams || 0);
+            document.getElementById('ownerCount').textContent = formatNumber(o.unique_owners || 0);
+            document.getElementById('avgCompletion').textContent = (o.avg_completion || 0) + '%';
+            document.getElementById('fullyComplete').textContent = formatNumber(o.fully_complete || 0);
+            document.getElementById('withDrillDown').textContent = formatNumber(o.with_drill_down || 0);
+            document.getElementById('totalChanges').textContent = formatNumber(o.total_changes || 0);
+        }
+
+        function updateDiagramCharts(analysis) {
+            if (!analysis) return;
+
+            const statusData = (analysis.status_distribution || []).map(d => ({ label: d.status, value: d.count }));
+            new PieChart('diagramStatusChart').render(statusData);
+
+            const typeData = (analysis.type_distribution || []).map(d => ({ label: d.type, value: d.count }));
+            new BarChart('diagramTypeChart').render(typeData);
+
+            const authData = (analysis.authorization_distribution || []).map(d => ({ label: d.authorization, value: d.count }));
+            new PieChart('authorizationChart').render(authData);
+
+            const completionData = (analysis.completion_by_type || []).map(d => ({ label: d.type, value: d.avg_completion }));
+            new BarChart('completionByTypeChart').render(completionData);
+
+            const ownerData = (analysis.owner_workload || []).map(d => ({ label: d.owner, value: d.diagram_count }));
+            new HorizontalBarChart('ownerWorkloadChart').render(ownerData);
+
+            // Update change activity table
+            const changeTable = document.getElementById('changeActivityTable');
+            const changes = analysis.change_activity || [];
+            if (changes.length === 0) {
+                changeTable.innerHTML = '<tr><td colspan="5" class="empty-state">No change data</td></tr>';
+            } else {
+                changeTable.innerHTML = changes.map(c => `
+                    <tr>
+                        <td>${c.map_name || '-'}</td>
+                        <td>${c.title || '-'}</td>
+                        <td>${c.owner || '-'}</td>
+                        <td><strong>${c.changes || 0}</strong></td>
+                        <td><span class="status-badge status-info">${c.status || '-'}</span></td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function updateResourceStats(analysis) {
+            if (!analysis || !analysis.overview) return;
+            const o = analysis.overview;
+            document.getElementById('totalRoles').textContent = formatNumber(o.total_roles || 0);
+            document.getElementById('uniqueGroups').textContent = formatNumber(o.unique_groups || 0);
+            document.getElementById('assignableCount').textContent = formatNumber(o.assignable_count || 0);
+            document.getElementById('notAssignableCount').textContent = formatNumber(o.not_assignable_count || 0);
+            document.getElementById('assignableRate').textContent = (o.assignable_rate || 0) + '%';
+            document.getElementById('uniqueSkills').textContent = formatNumber(o.unique_skill_areas || 0);
+        }
+
+        function updateResourceCharts(analysis) {
+            if (!analysis) return;
+
+            const groupData = (analysis.group_distribution || []).map(d => ({ label: d.group, value: d.count }));
+            new BarChart('groupDistChart').render(groupData);
+
+            const statusData = (analysis.assignment_status || []).map(d => ({ label: d.status, value: d.count }));
+            new PieChart('assignmentStatusChart').render(statusData);
+
+            const skillData = (analysis.skill_areas || []).slice(0, 10).map(d => ({ label: d.skill, value: d.count }));
+            new HorizontalBarChart('skillAreaChart').render(skillData);
+
+            // Update group details table
+            const detailsTable = document.getElementById('groupDetailsTable');
+            const details = analysis.group_details || [];
+            if (details.length === 0) {
+                detailsTable.innerHTML = '<tr><td colspan="4" class="empty-state">No resource data</td></tr>';
+            } else {
+                detailsTable.innerHTML = details.map(g => `
+                    <tr>
+                        <td><strong>${g.group}</strong></td>
+                        <td>${g.role_count}</td>
+                        <td>${g.total_hours}</td>
+                        <td><span class="status-badge status-success">${g.assignable}</span></td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // ===== ANALYSIS MODAL =====
+        async function showAnalysis(importId) {
+            try {
+                const analysis = await analyzeImport(importId);
+                if (analysis.error) {
+                    showToast(analysis.error, 'error');
+                    return;
+                }
+
+                const modal = document.getElementById('analysisModal');
+                const modalTitle = document.getElementById('modalTitle');
+                const modalBody = document.getElementById('modalBody');
+
+                modalTitle.textContent = `Analysis: ${analysis.filename} (${analysis.dataset_type})`;
+
+                let content = '';
+                if (analysis.dataset_type === 'diagrams') {
+                    currentDiagramAnalysis = analysis.analysis;
+                    updateDiagramStats(analysis.analysis);
+                    updateDiagramCharts(analysis.analysis);
+
+                    const o = analysis.analysis.overview || {};
+                    content = `
+                        <div class="analysis-section">
+                            <div class="analysis-title">Diagram Overview</div>
+                            <div class="analysis-grid">
+                                <div class="analysis-item"><div class="value">${o.total_diagrams || 0}</div><div class="label">Total Diagrams</div></div>
+                                <div class="analysis-item"><div class="value">${o.unique_owners || 0}</div><div class="label">Owners</div></div>
+                                <div class="analysis-item"><div class="value">${o.avg_completion || 0}%</div><div class="label">Avg Completion</div></div>
+                                <div class="analysis-item"><div class="value">${o.fully_complete || 0}</div><div class="label">Complete</div></div>
+                                <div class="analysis-item"><div class="value">${o.with_drill_down || 0}</div><div class="label">With Drill Down</div></div>
+                                <div class="analysis-item"><div class="value">${o.total_changes || 0}</div><div class="label">Total Changes</div></div>
+                            </div>
+                        </div>
+                        <p style="color: var(--gray); margin-top: 16px;">Switch to the <strong>Diagrams</strong> tab to see detailed visualizations.</p>
+                    `;
+                } else if (analysis.dataset_type === 'resource_groups') {
+                    currentResourceAnalysis = analysis.analysis;
+                    updateResourceStats(analysis.analysis);
+                    updateResourceCharts(analysis.analysis);
+
+                    const o = analysis.analysis.overview || {};
+                    content = `
+                        <div class="analysis-section">
+                            <div class="analysis-title">Resource Group Overview</div>
+                            <div class="analysis-grid">
+                                <div class="analysis-item"><div class="value">${o.total_roles || 0}</div><div class="label">Total Roles</div></div>
+                                <div class="analysis-item"><div class="value">${o.unique_groups || 0}</div><div class="label">Groups</div></div>
+                                <div class="analysis-item"><div class="value">${o.assignable_count || 0}</div><div class="label">Assignable</div></div>
+                                <div class="analysis-item"><div class="value">${o.not_assignable_count || 0}</div><div class="label">Not Assignable</div></div>
+                                <div class="analysis-item"><div class="value">${o.assignable_rate || 0}%</div><div class="label">Assignable Rate</div></div>
+                                <div class="analysis-item"><div class="value">${o.unique_skill_areas || 0}</div><div class="label">Skill Areas</div></div>
+                            </div>
+                        </div>
+                        <p style="color: var(--gray); margin-top: 16px;">Switch to the <strong>Resources</strong> tab to see detailed visualizations.</p>
+                    `;
+                } else {
+                    content = `
+                        <div class="analysis-section">
+                            <div class="analysis-title">Generic Dataset</div>
+                            <p>This dataset doesn't match the Diagrams or Resource Groups schema. Basic statistics are available.</p>
+                            <div class="analysis-grid">
+                                <div class="analysis-item"><div class="value">${analysis.row_count || 0}</div><div class="label">Rows</div></div>
+                                <div class="analysis-item"><div class="value">${analysis.column_count || 0}</div><div class="label">Columns</div></div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                modalBody.innerHTML = content;
+                modal.classList.add('active');
+
+            } catch (error) {
+                showToast('Failed to analyze import', 'error');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('analysisModal').classList.remove('active');
+        }
+
+        async function confirmDelete(importId) {
+            if (confirm('Delete this import?')) {
+                try {
+                    await deleteImport(importId);
+                    showToast('Import deleted', 'success');
+                    refreshAll();
+                } catch (error) {
+                    showToast('Failed to delete', 'error');
+                }
+            }
+        }
+
+        async function searchImports() {
+            const query = document.getElementById('searchInput').value;
+            const response = await fetch(`/api/imports?query=${encodeURIComponent(query)}`);
+            const data = await response.json();
+            updateImportsTable(data.results);
+        }
+
+        // ===== FILE UPLOAD =====
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+        async function handleFiles(files) {
+            for (const file of files) await processFile(file);
+            fileInput.value = '';
+        }
+
+        async function processFile(file) {
+            progressContainer.style.display = 'block';
+            progressFill.style.width = '0%';
+            progressText.textContent = `Uploading ${file.name}...`;
+
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) progress = 90;
+                progressFill.style.width = progress + '%';
+            }, 200);
+
+            try {
+                const result = await uploadFile(file);
+                clearInterval(interval);
+                if (result.success) {
+                    progressFill.style.width = '100%';
+                    progressText.textContent = `Imported ${result.row_count} rows from ${file.name}`;
+                    showToast(`Imported ${file.name}: ${result.row_count} rows`, 'success');
+
+                    // Auto-analyze after upload
+                    setTimeout(async () => {
+                        await showAnalysis(result.import_id);
+                    }, 500);
+
+                    refreshAll();
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                clearInterval(interval);
+                progressFill.style.background = 'var(--danger)';
+                progressText.textContent = `Failed: ${error.message}`;
+                showToast(`Failed: ${file.name}`, 'error');
+            }
+
+            setTimeout(() => {
+                progressContainer.style.display = 'none';
+                progressFill.style.width = '0%';
+                progressFill.style.background = '';
+            }, 3000);
+        }
+
+        // ===== INITIALIZATION =====
+        async function refreshAll() {
+            const metrics = await fetchMetrics();
+            if (metrics) {
+                updateGeneralStats(metrics);
+                updateGeneralCharts(metrics);
+                updateImportsTable(metrics.recent_imports);
+            }
+        }
+
+        document.getElementById('analysisModal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) closeModal();
+        });
+
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchImports();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            refreshAll();
+            setInterval(refreshAll, 30000);
+        });
+    </script>
+</body>
+</html>

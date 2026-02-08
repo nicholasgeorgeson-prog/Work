@@ -6,6 +6,9 @@ echo "======================================"
 echo "  File Import Metrics Dashboard"
 echo "======================================"
 
+# Create required directories
+mkdir -p data uploads templates
+
 # Check if virtual environment exists
 if [ ! -d "venv" ]; then
     echo "Creating virtual environment..."
